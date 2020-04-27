@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.dt.dao.UserRoleMapper">
+  <resultMap id="BaseResultMap" type="com.bf.dt.entity.UserRole">
+    <id column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="rid" jdbcType="VARCHAR" property="rid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    uuid, uid, rid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from dt..user_role
+    where uuid = #{uuid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from dt..user_role
+    where uuid = #{uuid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.bf.dt.entity.UserRole">
+    insert into dt..user_role (uuid, uid, rid
+      )
+    values (#{uuid,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR}, #{rid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.bf.dt.entity.UserRole">
+    insert into dt..user_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="uuid != null">
+        uuid,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="rid != null">
+        rid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="uuid != null">
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="rid != null">
+        #{rid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bf.dt.entity.UserRole">
+    update dt..user_role
+    <set>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="rid != null">
+        rid = #{rid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where uuid = #{uuid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bf.dt.entity.UserRole">
+    update dt..user_role
+    set uid = #{uid,jdbcType=VARCHAR},
+      rid = #{rid,jdbcType=VARCHAR}
+    where uuid = #{uuid,jdbcType=VARCHAR}
+  </update>
+  <select id="findByUid" parameterType="string" resultType="string">
+    select ur.rid from user_role ur where ur.uid = #{uid}
+  </select>
+</mapper>
