@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>layout 后台大布局 - Layui</title>
+    <title>后台系统管理</title>
     <link rel="stylesheet" href="layui/css/layui.css">
     <script src="js/jquery-2.1.1.min.js"></script>
 </head>
@@ -115,7 +115,7 @@
             if(obj.children!=null && obj.children.length>0){
                 $.each(obj.children,function(i,note){
                     content+='<dd>';
-                    content+='<a href="javascript:;" >'+note.menuName+'</a>';
+                    content+='<a href="javascript:tiaozhuan('+  note.path + ');" >'+note.menuName+'</a>';
                     if(note.children==null){
                         return;
                     }
@@ -129,6 +129,10 @@
         }
 
     });
+
+    function tiaozhuan(path){
+        window.location.href = "user/userList.html";
+    }
 
 
 

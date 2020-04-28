@@ -43,6 +43,18 @@ public class LoginController {
         return msgResult;
     }
 
+    @ResponseBody
+    @RequestMapping("/list")
+    public MsgResult list(String page, String limit){
+        MsgResult msgResult = userService.findAll(page,limit);
+        if (msgResult.getCode() == "200"){
+            System.out.println(msgResult.getData());
+        }
+        return msgResult;
+    }
+
+
+
 
 
 }

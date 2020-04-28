@@ -2,6 +2,9 @@ package com.bf.dt.dao;
 
 
 import com.bf.dt.entity.Role;
+import com.bf.dt.vo.RoleVo;
+
+import java.util.List;
 
 public interface RoleMapper {
     int deleteByPrimaryKey(String uuid);
@@ -15,4 +18,6 @@ public interface RoleMapper {
     int updateByPrimaryKeySelective(Role record);
 
     int updateByPrimaryKey(Role record);
+
+    List<RoleVo> findAll();
 }

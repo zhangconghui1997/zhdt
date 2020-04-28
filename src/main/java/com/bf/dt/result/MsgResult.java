@@ -4,6 +4,7 @@ public class MsgResult {
     String code;
     Object data;
     String message;
+    int count;
 
     public MsgResult() {
     }
@@ -12,6 +13,15 @@ public class MsgResult {
         this.code = code;
         this.data = data;
         this.message = message;
+    }
+
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public String getCode() {
@@ -53,6 +63,15 @@ public class MsgResult {
         msgResult.setCode(code);
         msgResult.setMessage(message);
         msgResult.setData(data);
+        return msgResult;
+    }
+
+    public static MsgResult page(String code,Object data,String message,int count){
+        MsgResult msgResult = new MsgResult();
+        msgResult.setCode(code);
+        msgResult.setMessage(message);
+        msgResult.setData(data);
+        msgResult.setCount(count);
         return msgResult;
     }
 

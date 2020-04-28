@@ -8,27 +8,38 @@
     <result column="flag" jdbcType="VARCHAR" property="flag" />
     <result column="creat_time" jdbcType="VARCHAR" property="creatTime" />
   </resultMap>
+
+  <resultMap id="RoleVoMap" type="com.bf.dt.vo.RoleVo">
+    <id column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="flag" jdbcType="VARCHAR" property="flag" />
+    <result column="creat_time" jdbcType="VARCHAR" property="creatTime" />
+  </resultMap>
+
+
+
   <sql id="Base_Column_List">
-    uuid, role_name, desc, flag, creat_time
+    uuid, role_name, `desc`, flag, creat_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from dt..role
+    from dt.role
     where uuid = #{uuid,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from dt..role
+    delete from dt.role
     where uuid = #{uuid,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.bf.dt.entity.Role">
-    insert into dt..role (uuid, role_name, desc, 
+    insert into dt.role (uuid, role_name, desc,
       flag, creat_time)
     values (#{uuid,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
       #{flag,jdbcType=VARCHAR}, #{creatTime,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bf.dt.entity.Role">
-    insert into dt..role
+    insert into dt.role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="uuid != null">
         uuid,
@@ -65,7 +76,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.bf.dt.entity.Role">
-    update dt..role
+    update dt.role
     <set>
       <if test="roleName != null">
         role_name = #{roleName,jdbcType=VARCHAR},
@@ -83,11 +94,15 @@
     where uuid = #{uuid,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.bf.dt.entity.Role">
-    update dt..role
+    update dt.role
     set role_name = #{roleName,jdbcType=VARCHAR},
       desc = #{desc,jdbcType=VARCHAR},
       flag = #{flag,jdbcType=VARCHAR},
       creat_time = #{creatTime,jdbcType=VARCHAR}
     where uuid = #{uuid,jdbcType=VARCHAR}
   </update>
+
+  <select id="findAll" resultMap="RoleVoMap">
+    select r.* from role r;
+  </select>
 </mapper>
