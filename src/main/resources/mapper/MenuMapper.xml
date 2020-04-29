@@ -96,11 +96,11 @@
 
 
   <select id="findByMid" parameterType="string" resultMap="UserMenuMap">
-    select m.* from menu m where uuid = #{mid}
+    select m.* from menu m where uuid = #{mid} and parentid = "0"
   </select>
 
   <select id="findByParentId" parameterType="string" resultMap="UserMenuMap">
-    select m.* from menu m where m.parentid = #{parentid}
+    select m.* from menu m where m.parentid = #{uuid}
   </select>
 
 </mapper>

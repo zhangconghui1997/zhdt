@@ -20,4 +20,5 @@ public interface RoleMapper {
     int updateByPrimaryKey(Role record);
 
     List<RoleVo> findAll();
+    List<Role> findAllRole();
 }

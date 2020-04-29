@@ -105,4 +105,10 @@
   <select id="findAll" resultMap="RoleVoMap">
     select r.* from role r;
   </select>
+
+
+  <select id="findAllRole" resultMap="BaseResultMap">
+    select r.* from role r;
+  </select>
+
 </mapper>

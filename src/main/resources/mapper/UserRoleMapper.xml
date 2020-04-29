@@ -71,4 +71,37 @@
   <select id="findByUid" parameterType="string" resultType="string">
     select ur.rid from user_role ur where ur.uid = #{uid}
   </select>
+
+
+  <update id="updateRole" parameterType="map">
+    update user_role
+    <set>
+      <if test="rid != null">
+        rid = #{rid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where uid = #{uid}
+
+  </update>
+
+  <delete id="deleteRoleByUser" parameterType="map">
+    delete from user_role
+    <where>
+      <if test="rid != null and rid != ''">
+        and rid = #{rid}
+      </if>
+      <if test="uid != null and uid != ''">
+        and uid = #{uid}
+      </if>
+    </where>
+  </delete>
+
+  <insert id="addRoleByUser" parameterType="map">
+    insert into user_role(uuid,rid,uid) values (#{uuid},#{rid},#{uid})
+  </insert>
+
+
+
+
+
 </mapper>

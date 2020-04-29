@@ -4,6 +4,7 @@ import com.bf.dt.entity.Role;
 import com.bf.dt.entity.UserRole;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserRoleMapper {
     int deleteByPrimaryKey(String uuid);
@@ -20,5 +21,10 @@ public interface UserRoleMapper {
 
 
     List<String> findByUid(String uid);
+
+
+
+    void deleteRoleByUser(Map<String,Object> map);
+    void addRoleByUser(Map<String,Object> map);
 
 }

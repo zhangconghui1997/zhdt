@@ -22,10 +22,11 @@ public class LoginController {
 
     @ResponseBody
     @RequestMapping("/login")
-    public MsgResult login(String loginName,String password){
+    public MsgResult login(String loginName,String password,HttpServletRequest request){
         System.out.println(loginName);
 
-        MsgResult msgResult = userService.findByName(loginName,password);
+        MsgResult msgResult = userService.findByName(loginName,password,request);
+
         return  msgResult;
 
     }

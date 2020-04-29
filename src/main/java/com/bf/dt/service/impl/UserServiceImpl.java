@@ -13,9 +13,11 @@ import com.bf.dt.service.UserService;
 import com.bf.dt.util.PageUtil;
 import com.bf.dt.vo.UserMenu;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
@@ -29,10 +31,11 @@ public class UserServiceImpl implements UserService {
     @Autowired(required = false)
     MenuMapper menuMapper;
     @Override
-    public MsgResult findByName(String loginName,String password) {
+    public MsgResult findByName(String loginName, String password, HttpServletRequest request) {
         User user = userMapper.findByName(loginName);
         if (user != null){
             if (password.equals(user.getPassword())){
+                request.getSession().setAttribute("User",user);
                 return MsgResult.success("200",user,"登录成功");
             }else {
                 return MsgResult.error("500","用户名或密码错误");
@@ -42,7 +45,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
+
     @Override
     public MsgResult findMenuByUser(String uid) {
         List<UserMenu> userMenus = new ArrayList<>();
@@ -52,7 +55,10 @@ public class UserServiceImpl implements UserService {
                 List<String> mids = roleMenuMapper.findByRid(r);
                 for (String m : mids) {
                     UserMenu byMid = menuMapper.findByMid(m);
-                    userMenus.add(byMid);
+                    if (byMid != null){
+                        userMenus.add(byMid);
+                    }
+
                 }
             }
         } catch (Exception e) {

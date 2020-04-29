@@ -1,6 +1,7 @@
 package com.bf.dt.util;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class MakeCode {
 
@@ -15,9 +16,21 @@ public class MakeCode {
         return fourRandom;
     }
 
+    public static String getUUID() {
+        String str = UUID.randomUUID().toString();
+        str = str.replaceAll("-", "");
+        return str;
+    }
+
+
+
+
+
     public static void main(String[] args) {
-        String fourRandom = getFourRandom();
-        System.out.println(fourRandom);
+        /*String fourRandom = getFourRandom();
+        System.out.println(fourRandom);*/
+        String uuid = getUUID();
+        System.out.println(uuid);
     }
 
 }
