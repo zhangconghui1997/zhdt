@@ -27,7 +27,7 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from dt..menu
+    from dt.menu
     where uuid = #{uuid,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -96,11 +96,16 @@
 
 
   <select id="findByMid" parameterType="string" resultMap="UserMenuMap">
-    select m.* from menu m where uuid = #{mid} and parentid = "0"
+    select m.* from menu m where m.uuid = #{mid} and m.parentid = "0"
   </select>
 
   <select id="findByParentId" parameterType="string" resultMap="UserMenuMap">
     select m.* from menu m where m.parentid = #{uuid}
   </select>
+
+  <select id="findByMain" resultType="string">
+    select m.uuid from menu m where m.parentid = '0'
+  </select>
+
 
 </mapper>

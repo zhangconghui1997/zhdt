@@ -51,19 +51,63 @@ public class UserServiceImpl implements UserService {
         List<UserMenu> userMenus = new ArrayList<>();
         try {
             List<String> rids = userRoleMapper.findByUid(uid);
+            List<String> mids = new ArrayList<>();
+            List<String> midps = new ArrayList<>();
+            List<String> newpid = new ArrayList<>();
             for (String r : rids) {
-                List<String> mids = roleMenuMapper.findByRid(r);
+                List<String> byRid = roleMenuMapper.findByRid(r);
+                for (String s: byRid) {
+                    mids.add(s);
+                }
+            }
+            midps = menuMapper.findByMain();
+
+                for (String s:mids) {
+                    Menu menu = menuMapper.selectByPrimaryKey(s);
+                    if (!newpid.contains(menu.getParentid())){
+                        newpid.add(menu.getParentid());
+                    }
+                 /*
+                    if (midps.contains(menu.getParentid())){
+                        continue;
+                    }
+                    midps.remove(menu.getParentid());*/
+                }
+                for (String s: newpid) {
+                    UserMenu byMid = menuMapper.findByMid(s);
+                    userMenus.add(byMid);
+                }
+
+                for (UserMenu userMenu: userMenus) {
+                    List<UserMenu> childrens = userMenu.getChildren();
+                    for (UserMenu um: childrens) {
+                        if (mids.contains(um.getUuid())){
+                            um.setChecked(true);
+                        }else {
+                            um.setChecked(false);
+                        }
+                    }
+                }
+
+
+
+
+/*                List<String> mids = roleMenuMapper.findByRid(r);
                 for (String m : mids) {
                     UserMenu byMid = menuMapper.findByMid(m);
                     if (byMid != null){
                         userMenus.add(byMid);
                     }
 
-                }
-            }
+                }*/
+
+
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
-            return MsgResult.error("500","权限分配失败");
+            return MsgResult.error("500","查询权限失败");
         }
         return MsgResult.success("200",userMenus,"查询成功");
     }

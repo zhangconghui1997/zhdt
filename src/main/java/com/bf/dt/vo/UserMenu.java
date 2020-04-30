@@ -1,5 +1,7 @@
 package com.bf.dt.vo;
 
+import org.springframework.data.annotation.Transient;
+
 import java.util.List;
 
 public class UserMenu {
@@ -13,9 +15,11 @@ public class UserMenu {
 
     String vuecomp;
 
+    Boolean checked;
+
 
     String vuename;
-
+    @Transient
     List<UserMenu> children;
 
     public List<UserMenu> getChildren() {
@@ -74,4 +78,11 @@ public class UserMenu {
         this.parentid = parentid == null ? null : parentid.trim();
     }
 
+    public Boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
+    }
 }

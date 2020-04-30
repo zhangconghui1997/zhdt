@@ -22,4 +22,7 @@ public interface MenuMapper {
     UserMenu findByMid(String mid);
 
     List<UserMenu> findByParentId(String parentid);
+
+    List<String> findByMain();
+
 }

@@ -20,4 +20,6 @@ public interface RoleMenuMapper {
     int updateByPrimaryKey(RoleMenu record);
 
     List<String> findByRid(String rid);
+
+
 }

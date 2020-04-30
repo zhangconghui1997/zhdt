@@ -69,6 +69,10 @@
     where uuid = #{uuid,jdbcType=VARCHAR}
   </update>
   <select id="findByRid" parameterType="string" resultType="string">
-    select rm.* from role_menu rm where rid = #{rid}
+    select rm.mid from role_menu rm where rid = #{rid}
   </select>
+
+
+
+
 </mapper>
