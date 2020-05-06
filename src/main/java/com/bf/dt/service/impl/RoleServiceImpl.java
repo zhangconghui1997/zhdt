@@ -37,6 +37,17 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
+    @Override
+    public MsgResult findAll() {
+        try {
+            List<RoleVo> all = roleMapper.findAll();
+            return MsgResult.success("0",all,"查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return MsgResult.error("500","查询失败");
+        }
+
+    }
 
 
 }

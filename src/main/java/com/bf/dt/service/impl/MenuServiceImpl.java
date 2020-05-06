@@ -27,16 +27,21 @@ public class MenuServiceImpl implements MenuService {
             List<UserMenu> menus = new ArrayList<>();
             for (String s:mids) {
                 Menu menu = menuMapper.selectByPrimaryKey(s);
-                pids.add(menu.getParentid());
+                if (pids.contains(menu.getParentid())){
+                    continue;
+                }else {
+                    pids.add(menu.getParentid());
+                }
+
             }
 
             for (String s: midps) {
                 UserMenu byMid = menuMapper.findByMid(s);
-                if (pids.contains(s)){
+               /* if (pids.contains(s)){
                     byMid.setChecked(true);
                 }else {
                     byMid.setChecked(false);
-                }
+                }*/
 
 
                 menus.add(byMid);

@@ -39,6 +39,12 @@ public class RoleController {
         return msgResult;
     }
 
+    @RequestMapping("findAll")
+    public MsgResult findAll(){
+        MsgResult msgResult = roleService.findAll();
+        return msgResult;
+    }
+
 
 
 

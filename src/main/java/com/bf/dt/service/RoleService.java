@@ -10,4 +10,6 @@ public interface RoleService {
 
     MsgResult addRole(Role role);
 
+    MsgResult findAll();
+
 }

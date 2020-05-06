@@ -22,4 +22,14 @@ public class MenuContorller {
     }
 
 
+    @RequestMapping("change")
+    public MsgResult findMenuByRole(String checkId,String rid){
+        System.out.println(checkId);
+        System.out.println(rid);
+
+        return null;
+    }
+
+
+
 }
