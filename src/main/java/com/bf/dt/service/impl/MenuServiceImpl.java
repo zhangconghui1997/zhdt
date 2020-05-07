@@ -3,14 +3,18 @@ package com.bf.dt.service.impl;
 import com.bf.dt.dao.MenuMapper;
 import com.bf.dt.dao.RoleMenuMapper;
 import com.bf.dt.entity.Menu;
+import com.bf.dt.entity.RoleMenu;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.MenuService;
+import com.bf.dt.util.UUIDUtil;
 import com.bf.dt.vo.UserMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MenuServiceImpl implements MenuService {
@@ -61,6 +65,51 @@ public class MenuServiceImpl implements MenuService {
         } catch (Exception e) {
             e.printStackTrace();
             return MsgResult.error("500","查询失败");
+        }
+    }
+
+    @Override
+    public MsgResult change(String checkId, String rid) {
+        try {
+            String[] checkIds = checkId.split(",");
+            ArrayList<String> checkIdList = new ArrayList<>();
+            List<String> byRid = roleMenuMapper.findByRid(rid);
+
+            for (int i = 0; i < checkIds.length; i++) {
+                checkIdList.add(checkIds[i]);
+            }
+
+            for (String s: checkIdList) {
+                if (byRid.contains(s)){
+                    continue;
+                }else {
+                    RoleMenu roleMenu = new RoleMenu();
+                    String uuid = UUIDUtil.getUUID();
+                    roleMenu.setUuid(uuid);
+                    roleMenu.setRid(rid);
+                    roleMenu.setMid(s);
+                    roleMenuMapper.insert(roleMenu);
+                }
+            }
+
+
+            for (String s : byRid) {
+                if (checkIdList.contains(s)){
+                    continue;
+                }else {
+                    Map<String,String> map = new HashMap<>();
+                    map.put("rid",rid);
+                    map.put("mid",s);
+                    roleMenuMapper.deleterm(map);
+                }
+            }
+
+
+            return MsgResult.success("200",null,"权限分配成功");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return  MsgResult.error("500","权限分配失败");
         }
     }
 }

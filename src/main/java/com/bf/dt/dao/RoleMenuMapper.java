@@ -5,6 +5,7 @@ import com.bf.dt.entity.Menu;
 import com.bf.dt.entity.RoleMenu;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RoleMenuMapper {
     int deleteByPrimaryKey(String uuid);
@@ -20,6 +21,8 @@ public interface RoleMenuMapper {
     int updateByPrimaryKey(RoleMenu record);
 
     List<String> findByRid(String rid);
+
+    void deleterm (Map<String,String> map);
 
 
 }

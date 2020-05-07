@@ -21,12 +21,6 @@
 </table>
 
 
-<div id="test2"></div>
-
-
-
-
-
 <script src="../layui/layui.js" charset="utf-8"></script>
 <script src="../js/jquery-2.1.1.min.js" charset="utf-8"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
@@ -103,6 +97,14 @@ var checkarr = [];
                         ,data:dataTemp
                         ,showCheckbox:true
                         ,id: 'demoId'
+                        ,oncheck: function(obj){
+                            if (checkarr.indexOf(obj.data.id)> -1){
+                                removeid(checkarr,obj.data.id);
+                            }else{
+                                checkarr.push(obj.data.id);
+                            }
+                            console.log(checkarr); //得到当前点击的节点数据
+                        }
                     });
                     tree.setChecked('demoId', checkarr); //批量勾选
                 });
@@ -115,38 +117,16 @@ var checkarr = [];
 
     }
 
+
+    function removeid(arr,val){
+        var index = arr.indexOf(val);
+        if (index > -1) {
+            arr.splice(index, 1);
+        }
+}
 </script>
 
 
-
-<script>
-    layui.use('tree', function(){
-        var tree = layui.tree;
-
-        //渲染
-        var inst1 = tree.render({
-            elem: '#test2'  //绑定元素
-            ,data: [{
-                title: '江西' //一级菜单
-                ,children: [{
-                    title: '南昌' //二级菜单
-                    ,checked:true
-                }, {
-                    title: 'beiping' //二级菜单
-                    , checked: false
-                }
-                ]
-            },{
-                title: '陕西' //一级菜单
-                ,children: [{
-                    title: '西安' //二级菜单
-                }]
-            }]
-            ,showCheckbox:true
-
-        });
-    });
-</script>
 
 
 
@@ -154,19 +134,15 @@ var checkarr = [];
 <script type="text/javascript">
 
     function tijiao(rid){
-        var checkData;
-        layui.use('tree', function(){
-            var tree = layui.tree;
-            checkData = tree.getChecked('demoId');
-        })
 
         $.ajax({
             type : 'POST',
             url : '/menu/change',
-            data : {"checkId" : checkData,"rid" : rid},
+            data : {"checkId" : checkarr.toString(),"rid" : rid},
             dataType :"json",
             success : function(data) {
                 if (data.code == "200") {
+                    window.location.reload();
                 } else {
                     alert(data.message);
                 }

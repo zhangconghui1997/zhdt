@@ -6,4 +6,6 @@ public interface MenuService {
 
     MsgResult findMenuByUser(String rid);
 
+    MsgResult change(String checkId,String rid);
+
 }

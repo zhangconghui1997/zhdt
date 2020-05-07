@@ -20,7 +20,7 @@
     where uuid = #{uuid,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.bf.dt.entity.RoleMenu">
-    insert into dt..role_menu (uuid, rid, mid
+    insert into role_menu (uuid, rid, mid
       )
     values (#{uuid,jdbcType=VARCHAR}, #{rid,jdbcType=VARCHAR}, #{mid,jdbcType=VARCHAR}
       )
@@ -70,6 +70,10 @@
   </update>
   <select id="findByRid" parameterType="string" resultType="string">
     select rm.mid from role_menu rm where rid = #{rid}
+  </select>
+
+  <select id="deleterm" parameterType="map">
+    delete from role_menu rm where rm.rid = #{rid} and rm.mid = #{mid}
   </select>
 
 

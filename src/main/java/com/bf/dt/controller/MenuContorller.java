@@ -23,11 +23,12 @@ public class MenuContorller {
 
 
     @RequestMapping("change")
-    public MsgResult findMenuByRole(String checkId,String rid){
+    public MsgResult change(String checkId,String rid){
+        MsgResult msgResult = menuService.change(checkId, rid);
         System.out.println(checkId);
         System.out.println(rid);
 
-        return null;
+        return msgResult;
     }
 
 
