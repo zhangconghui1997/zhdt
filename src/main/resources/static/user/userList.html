@@ -10,7 +10,7 @@
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
 </head>
 <body>
-<table class="layui-table" lay-data="{width: 892, height:330, url:'/user/list', page:true, id:'idTest'}" lay-filter="demo">
+<table class="layui-table" lay-data="{width: 1600, height:800, url:'/user/list', page:true, id:'idTest'}" lay-filter="demo">
     <thead>
     <tr>
         <th lay-data="{field:'uuid', width:120, fixed: true}">ID</th>
@@ -31,28 +31,24 @@
 -->
 
 
-
-
-
-
-
 <script src="../layui/layui.js" charset="utf-8"></script>
 <script src="../js/jquery-2.1.1.min.js" charset="utf-8"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
     layui.use('table', function(){
+
+        /**
+         *处理table工具栏里的内容
+         */
         var table = layui.table;
-
-
         table.on('tool(demo)', function(obj){
             var data = obj.data;
             if(obj.event === 'detail'){
                 fenpeiRole(data.uuid);
             } else if(obj.event === 'del'){
                 layer.confirm('真的删除行么', function(index){
-                    obj.del();
-                    layer.close(index);
+                    deleteById(data.uuid);
                 });
             } else if(obj.event === 'edit'){
                 layer.alert('编辑行：<br>'+ JSON.stringify(data))
@@ -73,6 +69,10 @@
 
 <script type="text/javascript">
 
+    /**
+     * 给用户分配角色
+     * @param uid
+     */
 
     function fenpeiRole(uid) {
 
@@ -102,10 +102,38 @@
         });
     }
 
+
+    /**
+     * 根据用户id删除用户
+     * @param uid
+     */
+
+    function deleteById(uid) {
+
+        $.ajax({
+            type : 'POST',
+            url : '/user/deleteById',
+            data : {"id" : uid},
+            dataType :"json",
+            success : function(data) {
+                if (data.code == "200") {
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            }
+        })
+
+    }
+
 </script>
 
 <script type="text/javascript">
 
+    /**
+     * 提交角色信息
+     * @param uid
+     */
     function tijiao(uid){
         var array = [];
         $.each($('#role input:checkbox:checked'),function() {

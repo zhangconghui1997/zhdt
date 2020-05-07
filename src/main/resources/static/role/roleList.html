@@ -10,15 +10,23 @@
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
 </head>
 <body>
-<table class="layui-table" lay-data="{width: 892, height:330, url:'/role/findAll', page:true, id:'idTest'}" lay-filter="demo">
+<table class="layui-table" lay-data="{width: 1600, height:750, url:'/role/findAll', page:true, id:'idTest'}" lay-filter="demo">
     <thead>
     <tr>
         <th lay-data="{field:'uuid', width:120, fixed: true}">ID</th>
         <th lay-data="{field:'roleName', width:120}">角色名称</th>
-        <th lay-data="{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}"></th>
+        <th lay-data="{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}">操作</th>
     </tr>
     </thead>
+    <div style="margin-top: 10px;margin-left: 10px">
+        <button type="button" class="layui-btn layui-btn-warm" onclick="addRole()">添加角色</button>
+    </div>
+
 </table>
+
+</body>
+
+
 
 
 <script src="../layui/layui.js" charset="utf-8"></script>
@@ -26,15 +34,15 @@
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
+    /**
+     * 处理table工具栏的内容
+     */
     layui.use('table', function(){
         var table = layui.table;
         table.on('tool(demo)', function(obj){
             var data = obj.data;
-            fenpeiRole(data.uuid);
-
+            fenpeiMenu(data.uuid);
         });
-
-
     });
 </script>
 
@@ -46,9 +54,12 @@
 
 <script type="text/javascript">
 
-var checkarr = [];
 
-
+    /**
+     * 处理后台返回的数据，让后台数据对应为layui树形组件所需要的数据
+     *
+     */
+    var checkarr = [];
     function getTree(array) {
         var arr = [];
         if (array != null || array.length != 0) {
@@ -74,16 +85,18 @@ var checkarr = [];
     }
 
 
+    /**
+     *  给角色分配对应的菜单权限
+     * @param rid
+     */
+    function fenpeiMenu(rid) {
 
-
-        function fenpeiRole(uid) {
-
-        $.post('/menu/findMenuByRole', {rid:uid}, function(data){
+        $.post('/menu/findMenuByRole', {rid:rid}, function(data){
             layer.open({
                 type: 1,
                 title: ['权限分配', 'font-size:18px;'],
                 area: ['500px', '300px'],
-                content:  '<div id="test1"></div><button class="layui-btn" onclick="tijiao(' + uid + ')">提交</button></form>'
+                content:  '<div id="test1"></div><button class="layui-btn" onclick="tijiao(' + rid + ')">提交</button></form>'
             });
 
             if (data.code == "0") {
@@ -103,14 +116,14 @@ var checkarr = [];
                             }else{
                                 checkarr.push(obj.data.id);
                             }
-                            console.log(checkarr); //得到当前点击的节点数据
+                            //console.log(checkarr); //得到当前点击的节点数据
                         }
                     });
                     tree.setChecked('demoId', checkarr); //批量勾选
                 });
 
             } else {
-                alert("获取权限失败")
+                alert(data.message);
             }
         });
 
@@ -118,12 +131,17 @@ var checkarr = [];
     }
 
 
+    /**
+     * 移除数组中的某个元素
+     * @param arr
+     * @param val
+     */
     function removeid(arr,val){
         var index = arr.indexOf(val);
         if (index > -1) {
             arr.splice(index, 1);
         }
-}
+    }
 </script>
 
 
@@ -132,9 +150,11 @@ var checkarr = [];
 
 
 <script type="text/javascript">
-
+    /**
+     * 提交数据，完成分配
+     * @param rid
+     */
     function tijiao(rid){
-
         $.ajax({
             type : 'POST',
             url : '/menu/change',
@@ -142,6 +162,7 @@ var checkarr = [];
             dataType :"json",
             success : function(data) {
                 if (data.code == "200") {
+                    //重新加载页面
                     window.location.reload();
                 } else {
                     alert(data.message);
@@ -150,7 +171,22 @@ var checkarr = [];
         })
     }
 
+
+
+    function addRole() {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+                type: 1,
+                content: '此功能马上上线' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                ,area: ['390px', '260px']
+            });
+        })
+    }
+
 </script>
 
-</body>
+
+
+
 </html>

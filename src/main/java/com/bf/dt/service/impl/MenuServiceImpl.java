@@ -25,9 +25,13 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MsgResult findMenuByUser(String rid) {
         try {
+            //该角色下所有的菜单id（子菜单）
             List<String> mids = roleMenuMapper.findByRid(rid);
+            //所有的父菜单id
             List<String> midps = menuMapper.findByMain();
+            //该角色下所拥有的父菜单id
             List<String> pids = new ArrayList<>();
+            //所有的菜单
             List<UserMenu> menus = new ArrayList<>();
             for (String s:mids) {
                 Menu menu = menuMapper.selectByPrimaryKey(s);
@@ -50,7 +54,7 @@ public class MenuServiceImpl implements MenuService {
 
                 menus.add(byMid);
             }
-
+            //将用户所拥有的菜单设置为true，未拥有的设为false
             for (UserMenu userMenu: menus) {
                 List<UserMenu> childrens = userMenu.getChildren();
                 for (UserMenu um: childrens) {
@@ -71,15 +75,19 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MsgResult change(String checkId, String rid) {
         try {
+            //选中的所有菜单id
             String[] checkIds = checkId.split(",");
             ArrayList<String> checkIdList = new ArrayList<>();
+            //未修改之前该角色对应的所有菜单
             List<String> byRid = roleMenuMapper.findByRid(rid);
 
             for (int i = 0; i < checkIds.length; i++) {
                 checkIdList.add(checkIds[i]);
             }
 
+
             for (String s: checkIdList) {
+                //如果未修改之前该角色对应的菜单id中包含选中的id，继续下次循环，不包含，则添为该角色增加新的菜单
                 if (byRid.contains(s)){
                     continue;
                 }else {
@@ -94,6 +102,7 @@ public class MenuServiceImpl implements MenuService {
 
 
             for (String s : byRid) {
+                //如果选中的菜单id包含未修改之前该角色对应的菜单id，继续下次循环，不包含，则吧该角色对应的该菜单id删除
                 if (checkIdList.contains(s)){
                     continue;
                 }else {

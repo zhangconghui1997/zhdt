@@ -108,4 +108,9 @@
   <select id="count" resultType="java.lang.Integer">
     select count(*) from user
   </select>
+
+
+  <delete id="deleteById" parameterType="string">
+    delete from user u where u.uuid = #{uuid}
+  </delete>
 </mapper>

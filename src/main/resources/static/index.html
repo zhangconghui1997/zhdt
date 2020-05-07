@@ -6,6 +6,7 @@
     <title>后台系统管理</title>
     <link rel="stylesheet" href="layui/css/layui.css">
     <script src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ykGNKtCIA0c2y5rKulYxFxMXBL4s7pIR"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -63,9 +64,13 @@
 
     <div class="layui-body">
         <!-- 内容主体区域 -->
-        <iframe frameborder="0" scrolling="yes" style="width:80%;height:100%" src="" id="aa"></iframe>
+        <iframe frameborder="0" scrolling="yes" style="width:100%;height:100%" src="map/baidumap.html" id="aa">
+        </iframe>
+
+
         <!--<div style="padding: 15px;">内容主体区域</div>-->
     </div>
+
 
     <div class="layui-footer">
         <!-- 底部固定区域 -->
@@ -81,8 +86,9 @@
     //JavaScript代码区域
     layui.use('element', function(){
         var element = layui.element;
-
-
+        /**
+         * 加载该用户对应的菜单
+         */
         $.ajax({
             type:"GET",
             url:"user/menus?uid="+searchURL,
@@ -92,7 +98,7 @@
                 var data = data.data
                 $.each(data,function(i,obj){
                     var content='<li class="layui-nav-item">';
-                    content+='<a href="javascript:;" >'+obj.menuName+'</a>';
+                    content+='<a href="javascript:;" style="color: #009688">'+obj.menuName+'</a>';
                     //这里是添加所有的子菜单
                     content+=loadchild(obj);
                     content+='</li>';
@@ -105,11 +111,15 @@
             }
         });
 
+        /**
+         * 处理子菜单
+         * @param obj
+         * @returns {string}
+         */
         function loadchild(obj){
             if(obj==null){
                 return;
             }
-
             var content='';
             if(obj.children!=null && obj.children.length>0){
                 $.each(obj.children,function(i,note){
@@ -151,13 +161,20 @@
 
 <script type="text/javascript">
 
+    /**
+     * 使用iframe点击左侧导航栏动态展示右侧页面
+     * @param path
+     */
+
     function tiaozhuan(path){
         $("iframe").attr("src",path);
     }
 
-
-
 </script>
+
+
+
+
 
 
 

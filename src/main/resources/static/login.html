@@ -14,7 +14,9 @@
 </form>
 
 <script type="text/javascript">
-
+    /**
+     * 用户登录
+     */
     function login() {
         $.ajax({
             type : 'POST',
@@ -24,6 +26,7 @@
             dataType :"json",
             success : function(data) {
                 if (data.code == "200") {
+                    //登录成功后跳转到index页面
                     window.location.href = "index.html?uid="+data.data.uuid;
                 } else {
                     alert(data.message);

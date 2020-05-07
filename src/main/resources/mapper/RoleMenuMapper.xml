@@ -72,9 +72,9 @@
     select rm.mid from role_menu rm where rid = #{rid}
   </select>
 
-  <select id="deleterm" parameterType="map">
+  <delete id="deleterm" parameterType="map">
     delete from role_menu rm where rm.rid = #{rid} and rm.mid = #{mid}
-  </select>
+  </delete>
 
 
 

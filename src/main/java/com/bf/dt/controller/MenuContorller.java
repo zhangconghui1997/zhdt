@@ -14,6 +14,11 @@ public class MenuContorller {
     MenuService menuService;
 
 
+    /**
+     * 查询角色对应的所有菜单
+     * @param rid
+     * @return
+     */
     @RequestMapping("findMenuByRole")
     public MsgResult findMenuByRole(String rid){
         MsgResult msgResult = menuService.findMenuByUser(rid);
@@ -22,6 +27,12 @@ public class MenuContorller {
     }
 
 
+    /**
+     * 修改角色对应的权限
+     * @param checkId
+     * @param rid
+     * @return
+     */
     @RequestMapping("change")
     public MsgResult change(String checkId,String rid){
         MsgResult msgResult = menuService.change(checkId, rid);

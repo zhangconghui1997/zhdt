@@ -18,4 +18,6 @@ public interface UserMapper {
 
     Integer count();
 
+     void deleteById(String uuid);
+
 }

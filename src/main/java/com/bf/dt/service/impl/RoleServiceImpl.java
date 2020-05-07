@@ -21,6 +21,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public MsgResult addRole(Role role) {
 
+        //添加角色实体
         try {
             List<Role> allRole = new ArrayList<>();
             role.setUuid(UUIDUtil.getUUID());
@@ -40,6 +41,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public MsgResult findAll() {
         try {
+            //查询所有的角色
             List<RoleVo> all = roleMapper.findAll();
             return MsgResult.success("0",all,"查询成功");
         } catch (Exception e) {

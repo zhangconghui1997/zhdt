@@ -9,8 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface UserService {
-    MsgResult findByName(String loginName, String password, HttpServletRequest request);
+    MsgResult findByName(String loginName, String password);
     MsgResult findMenuByUser(String uid);
     MsgResult findAll(String page,String limit);
+    MsgResult deleteById(String id);
 
 }
