@@ -28,7 +28,11 @@
                 </dl>
             </li>
         </ul>-->
+
         <ul class="layui-nav layui-layout-right">
+            <div>
+                <button onclick="video()">开启视频</button>
+            </div>
             <li class="layui-nav-item">
                 <a href="javascript:;">
                     <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
@@ -169,6 +173,13 @@
     function tiaozhuan(path){
         $("iframe").attr("src",path);
     }
+
+    function video() {
+
+        $("iframe").attr("src", "video/index.html");
+    }
+
+
 
 </script>
 
