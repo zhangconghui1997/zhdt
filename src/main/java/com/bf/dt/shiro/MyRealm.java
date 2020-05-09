@@ -1,9 +1,7 @@
 package com.bf.dt.shiro;
 
-import com.bf.dt.dao.UserMapper;
+import com.bf.dt.dao.system.UserMapper;
 import com.bf.dt.entity.User;
-import com.bf.dt.service.UserService;
-import com.bf.dt.util.EncryptionUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

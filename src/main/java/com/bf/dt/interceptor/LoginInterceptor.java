@@ -15,19 +15,30 @@ public class LoginInterceptor implements HandlerInterceptor {
         HttpSession session = httpServletRequest.getSession();
         String contextPath=session.getServletContext().getContextPath();
         String[] requireAuthPages = new String[]{
-                "index",
+                "index","video","user","role","menu"
         };
 
         String uri = httpServletRequest.getRequestURI();
+        if (uri.contains("login")){
+            return true;
+        }
+        int i = uri.indexOf("/", uri.indexOf("/")+1);
+        String page;
+        if (i!=-1){
+            page = uri.substring(1, i);
+        }else {
+            page = StringUtils.remove(uri, contextPath+"/");
+        }
 
-        uri = StringUtils.remove(uri, contextPath+"/");
-        String page = uri;
+
+      /*  uri = StringUtils.remove(uri, contextPath+"/");*/
+
 
 
        if(begingWith(page, requireAuthPages)){
             User user = (User) session.getAttribute("user");
             if(user==null) {
-                httpServletResponse.sendRedirect("login.html");
+                httpServletResponse.sendRedirect("/login.html");
                 return false;
             }
         }

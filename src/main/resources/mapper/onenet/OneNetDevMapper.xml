@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.dt.dao.onenet.OneNetDevMapper">
+
+
+
+
+	<!-- 查询全部信息 -->
+	<select id="retrieveAll" parameterType="map" resultType="com.bf.dt.entity.OneNetDevPo">
+		select ID,DEVID,DEVNAME,DESCRIBE,DEVTYPE,CONTYPE,AUTHINFO,CREATETIME,FIRESTATE,SITEID,COORDINATE,ORGID,KZLABEL,DEVSTATUS,CONTROLNUM,
+		(select dt.MA003 from DT_SITE dt where dt.MA001=t.SITEID) SITENAME,
+		(select c.MA002 from C001 c where c.MA001=t.ORGID) ORGNAME
+		from DT_ONENETDEV t
+		<where>
+			1 = 1
+			<if test="orgId != null and orgId != ''">
+				and t.ORGID = #{orgId}
+			</if>
+			<if test="siteId != null and siteId != ''">
+				and t.SITEID = #{siteId}
+			</if>
+			<if test="fireState != null and fireState != ''">
+				and t.FIRESTATE = #{fireState}
+			</if>
+			<if test="devId != null and devId != ''">
+				and t.DEVID = #{devId}
+			</if>
+			<if test="devType != null and devType != ''">
+				and t.DEVTYPE = #{devType}
+			</if>
+			<if test="devName != null and devName != ''">
+				and t.DEVNAME like '%'||#{devName}||'%'
+			</if>
+			<if test="conType != null and conType != ''">
+				and t.CONTYPE != #{conType}
+			</if>
+		</where>
+	</select>
+
+
+
+
+</mapper>
