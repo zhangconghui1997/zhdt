@@ -10,7 +10,10 @@
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
 </head>
 <body>
-<table class="layui-table" lay-data="{width: 1600, height:800, url:'/user/list', page:true, id:'idTest'}" lay-filter="demo">
+<div>
+    <button id="daochu" class="layui-btn layui-btn-warm">导出表格</button>
+</div>
+<table class="layui-table" lay-data="{width: 1600, height:700, url:'/user/list', page:true, id:'idTest'}" lay-filter="demo">
     <thead>
     <tr>
         <th lay-data="{field:'uuid', width:120, fixed: true}">ID</th>
@@ -36,6 +39,9 @@
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
+
+
+
     layui.use('table', function(){
 
         /**
@@ -52,8 +58,43 @@
                 });
             } else if(obj.event === 'edit'){
                 layer.alert('编辑行：<br>'+ JSON.stringify(data))
+            }else if(obj.event === 'chat'){
+                var data = obj.data;
+                chat(data);
+
+
             }
         });
+
+        $('#daochu').on('click', function () {
+                $.ajax({
+                    type : 'POST',
+                    url : '/user/list',
+                    dataType :"json",
+                    success : function(data) {
+                        if (data.code == "0") {
+
+                            var dataTemp = data.data;
+                            var downDatas =[];
+                            $.each(dataTemp,function(i,obj){
+                                var downData = {};
+                                downData.uuid = obj.uuid;
+                                downData.realName = obj.realName;
+                                downData.email = obj.email;
+                                downData.phone = obj.phone;
+                                downDatas.push(downData);
+                            })
+                            table.exportFile(['ID','用户名','邮箱', '电话'], downDatas, 'xls',"用户列表");
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                })
+        })
+
+
+
+
 
 
     });
@@ -62,8 +103,10 @@
 
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">分配角色</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="chat">发起聊天</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+
 </script>
 
 
@@ -75,7 +118,6 @@
      */
 
     function fenpeiRole(uid) {
-
         $.post('/role/findByUid', {uid:uid}, function(data){
             layer.open({
                 type: 1,
@@ -123,6 +165,23 @@
                 }
             }
         })
+
+    }
+
+    /**
+     * 给该用户发消息
+     * @param data
+     */
+    function chat(data) {
+        var uid = data.uuid;
+
+        layer.open({
+            type: 2,
+            title: ['与'+ data.realName + '的对话', 'font-size:18px;'],
+            area: ['500px', '300px'],
+            content: 'http://localhost:8086/webSocket/webSocket.html'
+        });
+
 
     }
 

@@ -21,6 +21,23 @@
 
     <dependencies>
 
+
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -117,7 +134,23 @@
             <version>1.2</version>
         </dependency>
 
+        <dependency>
 
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>0.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ojdbc6-11.2.0.3.jar</systemPath>
+
+        </dependency>
+
+        <!--websocket依赖-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>2.0.4.RELEASE</version>
+        </dependency>
 
 
 
@@ -128,9 +161,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
-        <resources>
+
+
+
+
+
+
+<!--       <resources>
         <resource>
             <directory>src/main/resources</directory>
             <includes>
@@ -143,7 +185,7 @@
                     <include>**/*.*</include>
                 </includes>
             </resource>
-        </resources>
+        </resources>-->
     </build>
 
 </project>

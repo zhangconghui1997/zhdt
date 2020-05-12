@@ -19,4 +19,6 @@ public interface UserMapper {
 
      void deleteById(String uuid);
 
+     User findById(String uuid);
+
 }

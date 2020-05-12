@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,8 +110,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MsgResult findAll(String page,String limit) {
+        Map<String, Object> map = new HashMap<>();
         //处理分页参数
-        Map<String, Object> map = PageUtil.getPage(page, limit);
+        if (page == null || page == "" || limit == null || limit == ""){
+            map = null;
+        }else {
+             map = PageUtil.getPage(page, limit);
+        }
+
         try {
             List<User> all = userMapper.findAll(map);
             //总共多少条数据
@@ -133,6 +140,17 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return MsgResult.error("500","删除失败");
+        }
+    }
+
+    @Override
+    public MsgResult findById(String uuid) {
+        try {
+            User byId = userMapper.findById(uuid);
+            return MsgResult.success("200",byId,"查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return MsgResult.error("200","查询失败");
         }
     }
 

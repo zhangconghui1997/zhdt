@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.dt.dao.onenet.OneNetCameraMapper">
+
+
+
+
+	<!-- 通过园区ID，网关ID，大棚ID，区域ID，返回采集器列表 -->
+	<select id="retrieveAll" parameterType="map"
+			resultType="com.bf.dt.entity.ArgCameraPO">
+		select *
+		from ARG_CAMERA
+		<where>
+			1 = 1
+			<if test="argArgCameraId != null and argArgCameraId != ''">AND MA001 = #{argArgCameraId}</if>
+			<if test="argYuanQuId != null and argYuanQuId != ''">AND MA002 = #{argYuanQuId}</if>
+			<if test="argDpId != null and argDpId != ''">AND MA004 = #{argDpId}</if>
+			<if test="argAreaId != null and argAreaId != ''">AND MA003 =#{argAreaId}</if>
+		</where>
+	</select>
+
+	<!-- 通过id获取实例 -->
+	<select id="retrieveInstanceById" parameterType="String"
+			resultType="com.bf.dt.entity.ArgCameraPO">
+		select MA001, MA002, MA003,  MA005, MA006, MA007,
+		 MA009, MA010，
+		  (select dt.MA003 from DT_SITE dt where dt.MA001 = MA003) MA015
+		from
+		ARG_CAMERA
+		where MA001 = #{ma001}
+	</select>
+
+
+
+
+
+</mapper>

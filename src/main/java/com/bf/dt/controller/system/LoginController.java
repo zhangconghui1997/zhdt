@@ -1,5 +1,6 @@
 package com.bf.dt.controller.system;
 
+import com.bf.dt.entity.User;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.system.UserService;
 import com.bf.dt.util.EncryptionUtil;
@@ -9,7 +10,11 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootVersion;
+import org.springframework.core.SpringVersion;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 
@@ -95,13 +100,39 @@ public class LoginController {
     }
 
 
+    /**
+     * 根据用户id查找用户名
+     * @param uid
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/findNameById")
+    public MsgResult findNameById(String uid, HttpServletRequest request){
+        try {
+            User user = (User)request.getSession().getAttribute("user");
+            return MsgResult.success("200",user.getRealName(),"成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return MsgResult.error("500","失败");
+        }
+
+
+    }
+
+
+
+
     public static void main(String[] args) {
-        String s = EncryptionUtil.AESEnc(EncryptionUtil.key, "123");
+/*        String s = EncryptionUtil.AESEnc(EncryptionUtil.key, "123");
         String s1 = EncryptionUtil.AESEnc(EncryptionUtil.key, "1234");
         String s2 = EncryptionUtil.AESEnc(EncryptionUtil.key, "12345");
         System.out.println(s);
         System.out.println(s1);
-        System.out.println(s2);
+        System.out.println(s2);*/
+        String version1 = SpringBootVersion.getVersion();
+        String version = SpringVersion.getVersion();
+        System.out.println(version);
+        System.out.println(version1);
 
     }
 

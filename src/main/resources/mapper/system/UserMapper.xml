@@ -102,7 +102,14 @@
   </select>
 
   <select id="findAll" parameterType="map" resultMap="BaseResultMap">
-    select u.uuid, u.real_name, u.email, u.phone from user u limit #{start},#{limit}
+    select u.uuid, u.real_name, u.email, u.phone from user u
+    <if test="start !=null">
+      <if test="limit != null">
+        limit #{start},#{limit}
+      </if>
+    </if>
+
+
   </select>
 
   <select id="count" resultType="java.lang.Integer">
@@ -113,4 +120,8 @@
   <delete id="deleteById" parameterType="string">
     delete from user u where u.uuid = #{uuid}
   </delete>
+
+  <select id="findById" parameterType="string" resultMap="BaseResultMap">
+    select u.* from user u where u.uuid = #{uuid}
+  </select>
 </mapper>

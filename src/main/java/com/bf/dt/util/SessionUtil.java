@@ -7,11 +7,10 @@ import javax.servlet.http.HttpSession;
 
 public class SessionUtil {
 
-    public static void main(String[] args) {
-        String s = "/user/userList.html";
-        int i = s.indexOf("/", s.indexOf("/")+1);
-        String substring = s.substring(1, i);
-        System.out.println(substring);
+    public static User getUser(HttpServletRequest httpServletRequest){
+        User user = (User)httpServletRequest.getSession().getAttribute("user");
+        return user;
     }
+
 
 }

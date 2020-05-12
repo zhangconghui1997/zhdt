@@ -8,6 +8,7 @@
     </style>
 
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=oG11WYXKM5gmaCGq9QWdRCKhgXdGXGsV"></script>
+    <script src="../js/jquery-2.1.1.min.js" charset="utf-8"></script>
     <title>地图展示</title>
 </head>
 <body>
@@ -17,21 +18,643 @@
 </body>
 
 <script type="text/javascript">
-    var map = new BMap.Map("allmap",{minZoom:4,maxZoom:16});
+    $(function() {
+        getYqPoint();
+        // 获取用水信息
+       /* getyqtotalFlow();*/
+    });
 
-    map.centerAndZoom("上海",15);
+
+</script>
+
+<script type="text/javascript">
+     function getYqPoint() {
+        var yqPoint;
+        $.ajax({
+            type : 'GET',
+            url : '/dtSite/getYuanQu?format=json',
+            async : false,
+            success : function(c001) {
+                if (c001){
+                    yqPoint = c001.ma020;
+                }
+            }
+        });
+        initMap(yqPoint);
+    }
 
 
-    map.addControl(new BMap.MapTypeControl({
-        mapTypes:[
-            BMAP_NORMAL_MAP,
-            BMAP_HYBRID_MAP
-        ]}));
-    map.addTileLayer(new BMap.PanoramaCoverageLayer());
+      function initMap(data) {
+         // 百度地图API功能
+         var map = new BMap.Map("allmap", {
+             enableMapClick : false,
+             minZoom : 17,
+             maxZoom : 21
+         }); // 创建Map实例
+         if (!data) {
+             alert("园区坐标点为空，请先设置园区坐标");
+             return;
+         }
+         var obj = eval("(" + data + ")");
+         var x = obj.data.x;
+         var y = obj.data.y;
+         var point = new BMap.Point(x, y);//园区中心点
+         window.map = map;
+         window.pointArray = [];
+         window.lastInfoBox = null; // 定义最近打开的地图信息窗体
+         window.labelData = [];// 存数点位数据
+         map.centerAndZoom(point, 17);
+         map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+         map.addEventListener("zoomend", function() {
+             var zoomLevel = map.getZoom(); // 获取地图缩放级别
+             if (zoomLevel == 17) {
+                 getSite();
+             } else {
+                 getDev();
+             }
+         });
+         getSite();
+     }
 
-    var stCtrl = new BMap.PanoramaControl(); //构造全景控件
-    stCtrl.setOffset(new BMap.Size(20, 20));
-    map.addControl(stCtrl);//添加全景控件
+
+
+
+      function getSite() {
+         var clustereData = [];
+         var labelListData = [];
+         $.ajax({
+             type : 'GET',
+             url : '/dtSite/getMapPoint?format=json',
+             success : function(siteList) {
+                 for (var i = 0; i < siteList.length; i++) {
+                     var site = {};
+                     site.name = siteList[i].ma003;
+                     site.code = "41" + i + "00000";
+                     var obj = eval("(" + siteList[i].ma013 + ")");
+                     site.longitude = obj.x;
+                     site.latitude = obj.y;
+                     site.count = siteList[i].devNum;
+                     clustereData.push(site);
+                 }
+
+                 addMarker(clustereData);
+             }
+         });
+     }
+
+
+
+
+      function getDev() {
+         var labelListData = [];
+         $.ajax({
+             type : 'GET',
+             url : '/dtOneNetDev/getMapPoint?format=json',
+             success : function(map) {
+                 var code = 1;
+                 var devList = map.dev;
+                 var cameraList = map.camera;
+                 for (var i = 0; i < devList.length; i++) {
+                     var dev = {};
+                     dev.name = devList[i].devName;
+                     dev.tag = devList[i].devType;// 设备类型标签
+                     if (devList[i].devType == "2" && devList[i].conType == "8") {
+                         //控制器跳出本次循环
+                         continue;
+                     }
+                     dev.uuid = devList[i].id;
+                     dev.ID = devList[i].devId;
+                     dev.code = code++;
+                     //dev.online = devList[i].online;
+                     if (devList[i].coordinate) {
+                         var obj = eval("(" + devList[i].coordinate + ")");
+                         dev.longitude = obj.x;
+                         dev.latitude = obj.y;
+                     } else {
+                         continue;
+                     }
+                     labelListData.push(dev);
+                 }
+                 for (var i = 0; i < cameraList.length; i++) {
+                     var camera = {};
+                     camera.name = cameraList[i].ma010;
+                     camera.ID = cameraList[i].ma001;
+                     camera.code = code++;
+                     var obj = eval("(" + cameraList[i].ma009 + ")");
+                     camera.longitude = obj.x;
+                     camera.latitude = obj.y;
+                     labelListData.push(camera);
+                 }
+                 createdevPoint(labelListData);
+             }
+         });
+     }
+
+
+
+
+      function addMarker(clustereData) {
+         map.clearOverlays();
+         $.each(clustereData, function(index, data) {
+             var point = new BMap.Point(data.longitude, data.latitude);
+             // 自定义label样式
+             var tpl = '<div class="bubble bubble-1" data-longitude="'
+                 + data.longitude + '"' + ' data-latitude="'
+                 + data.latitude + '" data-id="' + data.code + '">'
+                 + '<p class="name" title="' + data.name + '">'
+                 + data.name + '</p>' + '<p><span class="count">'
+                 + data.count + '</span>个设备</p>' + '</div>';
+             var myLabel = new BMap.Label(tpl, {
+                 position : point, // label 在此处添加点位位置信息
+                 offset : new BMap.Size(-46, -46)
+             });
+             myLabel.setStyle({
+                 width : "68px", // 宽
+                 height : "68px", // 高度
+                 border : "0", // 边
+                 color:"#fff",
+                 background : "rgb(0, 106, 27)", // 背景颜色
+                 borderRadius : "50%",
+                 cursor : "pointer",
+                 fontSize : "12x"
+             });
+             myLabel.setTitle(data.name);
+             map.addOverlay(myLabel);// 添加点位
+             // 当鼠标悬停在label上时显示行政区划边界
+             /*
+              * myLabel.addEventListener("mouseover", function () {
+              * myLabel.setStyle({background:"rgba(241,80,68,.9)"});
+              * //修改覆盖物背景颜色 var regionName = myLabel.getTitle();
+              * $.maps.getBoundary(regionName);//绘制行政区域范围，不需要执行了 });
+              */
+             // 当鼠标离开时在删除边界折线数据
+             /*
+              * myLabel.addEventListener("mouseout", function () {
+              * myLabel.setStyle({background:"rgba(84,144,244,.9)"});
+              * //修改覆盖物背景颜色 if (window.ply) { var polyPathArray = new
+              * Array(); window.ply.setPath(polyPathArray);
+              * map.removeOverlay(ply);//清除折线数据 } });
+              */
+             myLabel.addEventListener("click", function() {
+                 map.zoomIn();
+                 getDev();// 获取所有点位数据
+             });
+
+         })
+
+     }
+
+
+
+      function createdevPoint(labelListData) {
+         map.clearOverlays();
+         $.each(labelListData, function(index, data) {
+             // devID
+             var devID = data.ID;
+             // 设备类型(1-墒情监测，2-控制设备，3-气象站，4-集控一体)
+             var devtag = data.tag;
+             var uuid = data.uuid;
+             //设备在线状态
+             //var devStatus = data.online;
+
+             // 设备坐标点
+             var x = data.longitude;
+             var y = data.latitude;
+             var point = new BMap.Point(x, y);
+             // 根据设备类型选择标注图标
+             var myIcon = '';
+             if (devtag == '1' || devtag == '2' || devtag == '4') {
+                 myIcon = new BMap.Icon("../img/onenet/IOTdev.png",
+                     new BMap.Size(23, 32), {});
+             } else if (devtag == '3') {
+                 myIcon = new BMap.Icon("../img/onenet/wea.png",
+                     new BMap.Size(38, 80), {});
+             } else {
+                 myIcon = new BMap.Icon("../img/onenet/wea.png",
+                     new BMap.Size(20, 30), {});
+             }
+             var marker = new BMap.Marker(point, {
+                 icon : myIcon
+             });// 创建标注
+             map.addOverlay(marker);
+             var label = new BMap.Label(data.name,{offset:new BMap.Size(0,-7)});
+             label.setStyle({
+                 border : "0",
+                 backgroundColor : "rgb(0, 106, 27)",
+                 color:"#fff",
+                 cursor : "pointer"
+             });
+             marker.setLabel(label);
+             // 鼠标点击坐标点加载详细信息,根据类型,获取设备不同信息
+             //获取采集设备与气象站设备数据流
+             if(devtag == '1'|| devtag == '3'){
+                 marker.addEventListener("click", function(){
+                     $.ajax({
+                         url : '/dtDataStream/findDevInfoById?format=json',
+                         type : 'POST',
+                         data : {
+                             'id' : devID
+                         },
+                         success : function(devPo) {
+                             var data = devPo.detaStreams;
+                             var dev = devPo.dev;
+                             var text = '';
+                             text += '<div class="textcon">';
+                             text += '<div class="texttitle">设备数据</div>\n';
+                             if(dev.online == true){
+                                 text += '<div class="textstatus">在线</div>\n';
+                             }else{
+                                 text += '<div class="textstatus">离线</div>\n';
+                             }
+                             if (data != null && data.length > 0) {
+                                 for (var int = 0; int < data.length; int++) {
+                                     // 设置站点要显示的图文信息
+                                     text += '<div class="dataval">'+data[int].name + ' : '+ data[int].value+ '</div><div class="datatime">'+ data[int].time + '</div>\n';
+                                 }
+                             }
+                             else{
+                                 text += '<div>暂无数据</div>\n';
+                             }
+                             text += '</div>\n';
+                             var infoWindow = new BMap.InfoWindow(text);
+                             marker.openInfoWindow(infoWindow);
+                         },
+                     });
+                 });
+                 //获取设备数据流及控制旗下的实际控制设备
+             }else if(devtag == '2' || devtag == '4'){
+                 marker.addEventListener("click", function(){
+                     $.ajax({
+                         url : '/dtDataStream/findDevInfoByuuId?format=json',
+                         type : 'POST',
+                         data : {
+                             'uuid' : uuid
+                         },
+                         success : function(data) {
+                             var text = '';
+                             var devid = data.dev.devId;//设备ID
+                             var vals = data.detaStreams;//数据流
+                             var kzLabel = data.dev.kzLabel;//子设备标记
+                             var devContype = data.dev.conType;//控制类型
+                             var status = data.dev.online;//在线状态
+                             var devconstatus = data.dev.devStatus;//设备当前运行状态（0:关闭,1:运行,2:停止）
+                             var open = open;
+                             var close = close;
+                             var stop = stop;
+                             //数据流不为空则显示数据流
+                             text += '<div class="textcon">';
+                             text += '<div class="devtitle">设备信息</div>\n';
+                             if(status == true){
+                                 text += '<div class="textstatus">在线</div>\n';
+                             }else{
+                                 text += '<div class="textstatus">离线</div>\n';
+                             }
+                             if (devtag == "4" && vals != null && vals.length > 0) {
+                                 for (var int = 0; int < vals.length; int++) {
+                                     // 设置站点要显示的图文信息
+                                     text += '<div class="dataval">'+vals[int].name + ' : '+ vals[int].value+ '</div><div class="datatime">'+ vals[int].time + '</div>\n';
+                                 }
+                             }else if(devtag == "4"){
+                                 text += '<div>暂无数据</div>\n';
+                             }
+                             text += '</div>\n';
+                             //判断设备类型，不为空就显示
+                             if(devContype != null && devContype != '8' && kzLabel == "0"){
+                                 text += '<div class="devcon">';
+                                 if (devContype == '1') {
+                                     text += '<input class="devbtn" type="button" onclick="devOpen(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="开启"/><input class="devbtn" type="button" onclick="devClose(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="关闭"/>\n';
+                                 }else if(devContype == '2'){
+                                     text += '<input class="devbtn" type="button" onclick="devOpen(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="开启"/><input class="devbtn" type="button" onclick="devClose(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="关闭"/>\n';
+                                 }else if(devContype == '3'){
+                                     text += '<input class="devbtn" type="button" onclick="devOpen(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="开启"/><input class="devbtn" type="button" onclick="devClose(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="关闭"/><input class="devbtn" type="button" onclick="devStop(\''+devid+'\',\''+devContype+'\',\''+status+'\')" value="停止"/>\n';
+                                 }else{
+                                     text += '<div class="info">请配置设备</div>\n';
+                                 }
+                                 text += '<div class="devstu">';
+                                 if(devconstatus == 1){
+                                     text += '<div id="devlight" class="opened"></div>\n';
+                                     text += '<div id="devtext" class="p2">运行中</div>\n';
+                                 }else if(devconstatus == 2){
+                                     text += '<div id="devlight" class="stoped"></div>\n';
+                                     text += '<div id="devtext" class="p2">已停止</div>\n';
+                                 }else{
+                                     text += '<div id="devlight" class="closed"></div>\n';
+                                     text += '<div id="devtext" class="p2">已关闭</div>\n';
+                                 }
+                                 text += '</div>\n';
+                                 text += '</div>\n';
+                             }//子设备
+                             else if(devContype != null && devContype != '8' && kzLabel == "1"){
+                                 //取出设备编号
+                                 var devControlNum = data.dev.controlNum
+                                 text += '<div class="devcon">';
+                                 if (devContype == '1') {
+                                     text += '<input class="devbtn" type="button" onclick="controlDevOpen(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="开启"/><input class="devbtn" type="button" onclick="controlDevClose(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="关闭"/>\n';
+                                 }else if(devContype == '2'){
+                                     text += '<input class="devbtn" type="button" onclick="controlDevOpen(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="开启"/><input class="devbtn" type="button" onclick="controlDevClose(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="关闭"/>\n';
+                                 }else if(devContype == '3'){
+                                     text += '<input class="devbtn" type="button" onclick="controlDevOpen(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="开启"/><input class="devbtn" type="button" onclick="controlDevClose(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="关闭"/>' +
+                                         '<input class="devbtn" type="button" onclick="controlDevStop(\''+devid+'\',\'' + devControlNum + '\',\''+devContype+'\',\''+status+'\')" value="停止"/>\n';
+                                 }else{
+                                     text += '<div class="info">请配置设备</div>\n';
+                                 }
+                                 text += '<div class="devstu">';
+                                 if(devconstatus == 1){
+                                     text += '<div id="devlight" class="opened"></div>\n';
+                                     text += '<div id="devtext" class="p2">运行中</div>\n';
+                                 }else if(devconstatus == 2){
+                                     text += '<div id="devlight" class="stoped"></div>\n';
+                                     text += '<div id="devtext" class="p2">已停止</div>\n';
+                                 }else{
+                                     text += '<div id="devlight" class="closed"></div>\n';
+                                     text += '<div id="devtext" class="p2">已关闭</div>\n';
+                                 }
+                                 text += '</div>\n';
+                                 text += '</div>\n';
+                             }
+                             var infoWindow = new BMap.InfoWindow(text);
+                             marker.openInfoWindow(infoWindow);
+                         },
+                     });
+                 });
+                 //获取摄像头信息
+             }else{
+                 marker.addEventListener("click", function(){
+                     $.ajax({
+                         url : '/argCamera/start?format=json',
+                         type : 'POST',
+                         data : {
+                             'id' : devID
+                         },
+                         success : function(data) {
+                             if (!data){
+                                 alert("设备不在线");
+                                 return
+                             }
+                             var up = 'up';
+                             var down = 'down';
+                             var left = 'left';
+                             var right = 'right';
+                             var stop = 'stop';
+                             var zoomin = 'zoomin';
+                             var zoomout = 'zoomout';
+                             //从后台获取的播放地址
+                             var ipv=data.ma008;
+                             //livegbs设备ID
+                             var liveid = data.ma005;
+                             //独立的页面样式
+                             var text = '';
+                             text += '<div class="videocon">';
+                             text += '<div class="vtitle">视频查看</div>\n';
+                             text += '<div class="vcon">';
+                             text += '<div class="viewcon"><iframe frameborder="0" src="http://cloud.liveqing.com:10080/LivePlayer.html?videoUrl='+ipv+'&muted=yes&autoplay=yes&stretch=yes&fluent=true" width="100%" height="100%" allowfullscreen></iframe></div>\n';
+                             text += '<div class="ptzcon">';
+                             text += '<div class="ptzctl">';
+                             text += '<div class="upbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + up + '\')"></div>\n';
+                             text += '<div class="leftbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + left + '\')"></div>\n';
+                             text += '<div class="stopbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + stop + '\')"></div>\n';
+                             text += '<div class="rightbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + right + '\')"></div>\n';
+                             text += '<div class="downbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + down + '\')"></div>\n';
+                             text += '</div>\n';
+                             text += '<div class="foucs">';
+                             text += '<div class="zoominbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + zoomin + '\')"></div>\n';
+                             text += '<div class="zoomoutbtn" onclick="ptzcontrl(\''
+                                 + liveid + '\',\'' + zoomout + '\')"></div>\n';
+                             text += '</div>\n';
+                             text += '</div>\n';
+                             text += '</div>\n';
+                             text += '</div>\n';
+                             var infoWindow = new BMap.InfoWindow(text);
+                             marker.openInfoWindow(infoWindow);
+                         }
+                     });
+                 });
+             }
+
+             // 鼠标离开后隐藏信息
+             marker.addEventListener("mouseout", function() {
+                 setTimeout(function() {
+                     marker.closeInfoWindow();
+                 }, 50000);
+             });
+         });
+     }
+
+
+      function ptzcontrl(liveid,command){
+         $.ajax({
+             url : '/argCamera/control',
+             type : 'POST',
+             data : {
+                 'liveId':liveid,
+                 'command':command
+             },
+             success : function(data) {
+
+             }
+         });
+     }
+
+
+      function devOpen(devid,devContype,online){
+         if (online == 'false'){
+             layer.alert('设备离线，请检查设备！',{icon:0,title:'系统消息',offset:'300px'});
+             return;
+         }
+         var msg = layer.msg('设备开启中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false,offset: '400px',time: 0});
+         $.ajax({
+             url : '/dtOneNetDev/sendCmds?format=json',
+             type : 'POST',
+             data : {
+                 'devId':devid,
+                 'type':devContype,
+                 'cmd':'open'
+             },
+             success : function(data) {
+                 var devmassage = data.map.status;
+                 layer.alert(data.message,{icon:data.type,title:data.title,offset:'300px'});
+                 layer.close(msg);
+                 if(devmassage == 1){
+                     $("#devlight").attr("class","opened");//改变class
+                     $("#devtext").html("运行中");//改变内容
+                 }
+             }
+         });
+     }
+
+
+
+      function devClose(devID,devContype,online){
+         if (online == 'false'){
+             layer.alert('设备离线，请检查设备！',{icon:0,title:'系统消息',offset:'300px'});
+             return;
+         }
+         var msg = layer.msg('设备关闭中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false,offset: '400px',time: 0});
+         $.ajax({
+             url : '/dtOneNetDev/sendCmds?format=json',
+             type : 'POST',
+             data : {
+                 'devId':devID,
+                 'type':devContype,
+                 'cmd':'close'
+             },
+             success : function(data) {
+                 var devmassage = data.map.status;
+                 layer.alert(data.message,{icon:data.type,title:data.title,offset:'300px'});
+                 layer.close(msg);
+                 if(devmassage == 0){
+                     $("#devlight").attr("class","closed");//改变class
+                     $("#devtext").html("已关闭");//改变内容
+                 }
+             }
+         });
+     }
+
+
+
+     //停止
+      function devStop(devID,devContype,online){
+         if (online == 'false'){
+             layer.alert('设备离线，请检查设备！',{icon:0,title:'系统消息',offset:'300px'});
+             return;
+         }
+         var msg = layer.msg('设备停止中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false,offset: '400px',time: 0});
+         $.ajax({
+             url : '/dtOneNetDev/sendCmds?format=json',
+             type : 'POST',
+             data : {
+                 'devId':devID,
+                 'type':devContype,
+                 'cmd':'stop'
+             },
+             success : function(data) {
+                 var devmassage = data.map.status;
+                 layer.alert(data.message,{icon:data.type,title:data.title,offset:'300px'});
+                 layer.close(msg);
+                 if(devmassage == 2){
+                     $("#devlight").attr("class","stoped");//改变class
+                     $("#devtext").html("已停止");//改变内容
+                 }
+             }
+         });
+     }
+
+
+
+     //开启(子设备)
+      function controlDevOpen(devID, devControlNum,devContype,online) {
+         if (online == 'false'){
+             layer.alert('设备离线，请检查设备！',{icon:0,title:'系统消息',offset:'300px'});
+             return;
+         }
+         var msg = layer.msg('设备开启中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false,offset: '400px',time: 0});
+         $.ajax({
+             url: '/dtOneNetDev/sendControlDevCmds?format=json',
+             type: 'POST',
+             data: {
+                 'devId': devID,
+                 'type': devContype,
+                 'num': devControlNum,
+                 'cmd': 'open'
+             },
+             success: function (data) {
+                 var devmassage = data.map.cmd;
+                 layer.alert(data.message,{icon:data.type,title:data.title,offset:'300px'});
+                 layer.close(msg);
+                 if (devmassage == "open") {
+                     $("#devlight").attr("class","opened");//改变class
+                     $("#devtext").html("运行中");//改变内容
+                 }
+             }
+         });
+     }
+
+
+     //关闭(子设备)
+     function controlDevClose(devID, devControlNum,devContype,online) {
+         if (online == 'false'){
+             layer.alert('设备离线，请检查设备！',{icon:0,title:'系统消息',offset:'300px'});
+             return;
+         }
+         var msg = layer.msg('设备关闭中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false,offset: '400px',time: 0});
+         $.ajax({
+             url: '/dtOneNetDev/sendControlDevCmds?format=json',
+             type: 'POST',
+             data: {
+                 'devId': devID,
+                 'type': devContype,
+                 'num': devControlNum,
+                 'cmd': 'close'
+             },
+             success: function (data) {
+                 var devmassage = data.map.cmd;
+                 layer.alert(data.message,{icon:data.type,title:data.title,offset:'300px'});
+                 layer.close(msg);
+                 if (devmassage == "close") {
+                     $("#devlight").attr("class","closed");//改变class
+                     $("#devtext").html("已关闭");//改变内容
+                 }
+             }
+         });
+     }
+
+
+
+     //停止(子设备)
+     function controlDevStop(devID, devControlNum,devContype,online) {
+         if (online == 'false'){
+             layer.alert('设备离线，请检查设备！',{icon:0,title:'系统消息',offset:'300px'});
+             return;
+         }
+         var msg = layer.msg('设备停止中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false,offset: '400px',time: 0});
+         $.ajax({
+             url: '/dtOneNetDev/sendControlDevCmds?format=json',
+             type: 'POST',
+             data: {
+                 'devId': devID,
+                 'type': devContype,
+                 'num': devControlNum,
+                 'cmd': 'stop'
+             },
+             success: function (data) {
+                 var devmassage = data.map.cmd;
+                 layer.alert(data.message,{icon:data.type,title:data.title,offset:'300px'});
+                 layer.close(msg);
+                 if (devmassage == "stop") {
+                     $("#devlight").attr("class","stoped");//改变class
+                     $("#devtext").html("已停止");//改变内容
+                 }
+             }
+         });
+     }
+
+
+
+     //用水量信息
+      function getyqtotalFlow(){
+         $
+             .ajax({
+                 type : "POST",
+                 url : "/dtDataStream/totalFlow?format=json",
+                 success : function(data) {
+                     var str='';
+                     str +=''+data +'  m³';
+                     $("#flowcon").html(str);
+                 }
+             });
+     }
+
+
+
+
+
+
 
 
 </script>
