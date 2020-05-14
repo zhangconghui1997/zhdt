@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.dt.dao.onenet.OneNetHistoricalDataMapper">
+
+	<select id="historicalLine" parameterType="map"
+			resultType="com.bf.dt.entity.ArgCurvePO">
+		select DSID,DSVALUE,to_char(GETTIME,'yyyy-MM-dd HH24:mi:ss') VALUETIME
+		from DTYFXDH a
+		<where>
+			1 = 1
+			<if test="argYuanQuId != null and argYuanQuId != ''">
+				and a.ORGID = '83cea031843e4635b5e07fbea6dfa2e6'
+			</if>
+			<if test="argAreaId != null and argAreaId != ''">
+				and a.SITEID = #{argAreaId}
+			</if>
+			<if test="devId != null and devId != ''">
+				and a.DEVID = #{devId}
+			</if>
+			<if test="starTime != null and starTime != ''">
+				<![CDATA[and a.GETTIME >= to_date(#{starTime},'yyyy-mm-dd HH24:mi:ss')]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and a.GETTIME <= to_date(#{endTime},'yyyy-mm-dd HH24:mi:ss')]]>
+			</if>
+			and a.DSID in('airtemp','airhumi','Illumination','Co2','soilhumi1','soilhumi2','soilhumi3'/*,'soilhumi4','soilhumi5','soilhumi6'*/)
+		</where>
+		order by a.GETTIME ASC
+	</select>
+
+
+
+
+
+
+
+</mapper>

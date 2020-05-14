@@ -12,7 +12,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle (HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-  /*      HttpSession session = httpServletRequest.getSession();
+        HttpSession session = httpServletRequest.getSession();
         String contextPath=session.getServletContext().getContextPath();
         String[] requireAuthPages = new String[]{
                 "index","video","user","role","menu"
@@ -31,7 +31,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
 
-      *//*  uri = StringUtils.remove(uri, contextPath+"/");*//*
+      // uri = StringUtils.remove(uri, contextPath+"/");
 
 
 
@@ -44,7 +44,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
 
-*/
+
 
 
         return true;

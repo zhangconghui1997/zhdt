@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.dt.dao.onenet.OneNetDsMapper">
+
+
+	<!--通过数据流ID获取实例	-->
+	<select id="retrieveInstanceByMA003" parameterType="String" resultType="com.bf.dt.entity.OneNetDsPO">
+		select MA001, MA003, MA004, MA005
+			from DT_SENTYPE
+			where MA003 = #{ma003}
+	</select>
+
+</mapper>
