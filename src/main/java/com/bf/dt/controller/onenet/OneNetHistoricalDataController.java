@@ -16,8 +16,8 @@ public class OneNetHistoricalDataController {
     OneNetHistoricalDataService oneNetHistoricalDataService;
 
     @RequestMapping("historicalLine")
-    public MsgResult historicalLine(String areaId,String devId){
-        MsgResult msgResult = oneNetHistoricalDataService.historicalLine(areaId, devId);
+    public MsgResult historicalLine(String areaId,String devId,String dsId){
+        MsgResult msgResult = oneNetHistoricalDataService.historicalLine(areaId, devId,dsId);
 
         return msgResult;
 

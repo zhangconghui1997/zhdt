@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface OneNetHistoricalDataService {
 
-    MsgResult historicalLine(String areaId,String devId);
+    MsgResult historicalLine(String areaId,String devId,String dsId);
     MsgResult findAll();
 }

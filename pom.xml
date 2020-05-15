@@ -144,6 +144,18 @@
 
         </dependency>
 
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-push</artifactId>
+            <version>3.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>[4.3.2,5.0.0)</version>
+        </dependency>
+
+
         <!--websocket依赖-->
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
         <dependency>

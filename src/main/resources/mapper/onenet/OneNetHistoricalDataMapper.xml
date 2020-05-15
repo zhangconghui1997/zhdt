@@ -5,7 +5,7 @@
 
 	<select id="historicalLine" parameterType="map"
 			resultType="com.bf.dt.entity.ArgCurvePO">
-		select DSID,DSVALUE,to_char(GETTIME,'yyyy-MM-dd HH24:mi:ss') VALUETIME
+		select DSID,DSVALUE,DSNAME,to_char(GETTIME,'yyyy-MM-dd HH24:mi:ss') VALUETIME
 		from DTYFXDH a
 		<where>
 			1 = 1
@@ -17,6 +17,9 @@
 			</if>
 			<if test="devId != null and devId != ''">
 				and a.DEVID = #{devId}
+			</if>
+			<if test="dsId != null and dsId != ''">
+				and a.DSID = #{dsId}
 			</if>
 			<if test="starTime != null and starTime != ''">
 				<![CDATA[and a.GETTIME >= to_date(#{starTime},'yyyy-mm-dd HH24:mi:ss')]]>

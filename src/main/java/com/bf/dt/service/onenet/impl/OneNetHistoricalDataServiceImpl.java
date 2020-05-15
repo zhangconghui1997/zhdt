@@ -19,8 +19,10 @@ public class OneNetHistoricalDataServiceImpl implements OneNetHistoricalDataServ
     @Autowired
     OneNetDsMapper oneNetDsMapper;
     @Override
-    public MsgResult historicalLine(String areaId, String devId) {
+    public MsgResult historicalLine(String areaId, String devId,String dsId) {
         Map<String,String> map = new HashMap<>();
+        areaId = "00";
+        devId = "33";
         if (areaId == null || devId==null){
             return MsgResult.error("500","请选择设备");
         }else {
@@ -35,30 +37,11 @@ public class OneNetHistoricalDataServiceImpl implements OneNetHistoricalDataServ
                 map.put("devId","593519998");
                 map.put("starTime",starTime);
                 map.put("endTime",endTime);
+                map.put(("dsId"),"airtemp");
                 List<ArgCurvePO> argCurvePOS = oneNetHistoricalDataMapper.historicalLine(map);
-                ArrayList<Map> list = new ArrayList<>();
-                Map<String, List<Map<String,String>>> hashMap = new HashMap<>();
 
 
-                for (ArgCurvePO a: argCurvePOS) {
-                    List<Map<String,String>> mapList= new ArrayList<>();
-                    Map<String, String> map1 = new HashMap<>();
-                    OneNetDsPO oneNetDsPO = oneNetDsMapper.retrieveInstanceByMA003(a.getDSID());
-                    String ma004 = oneNetDsPO.getMa004();
-                    List<Map<String,String>> maps = hashMap.get(ma004);
-                    if (maps!=null){
-                        map1.put(a.getVALUETIME(),a.getDSVALUE());
-                        maps.add(map1);
-                    }else {
-                        map1.put(a.getVALUETIME(),a.getDSVALUE());
-                        mapList.add(map1);
-                        hashMap.put(ma004,mapList);
-                        list.add(hashMap);
-                    }
-
-                }
-
-                return MsgResult.success("200",list,"查询成功");
+                return MsgResult.success("200",argCurvePOS,"查询成功");
             } catch (Exception e) {
                 e.printStackTrace();
                 return MsgResult.error("500","查询失败");

@@ -16,6 +16,8 @@ public class ArgCurvePO {
      */
     private String VALUETIME;
 
+    private String DSNAME;
+
     public String getDSID() {
         return DSID;
     }
@@ -40,4 +42,11 @@ public class ArgCurvePO {
         this.VALUETIME = VALUETIME;
     }
 
+    public String getDSNAME() {
+        return DSNAME;
+    }
+
+    public void setDSNAME(String DSNAME) {
+        this.DSNAME = DSNAME;
+    }
 }

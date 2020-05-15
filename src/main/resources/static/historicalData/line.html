@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>系统登录</title>
 <script src="../js/echarts.min.js"></script>
+    <script src="../js/jquery-2.1.1.min.js"></script>
 
 </head>
 <body>
@@ -13,88 +14,141 @@
 
 
 </body>
+<script type="text/javascript">
+    $(function () {
+
+        findDs();
+    })
+
+    function findDs() {
+        var titleText;
+        var legendData = [];
+        var xAxisData = [];
+        var seriesData= [];
+
+
+
+        $.ajax({
+            type : 'POST',
+            url : '/oneNetHistoricalData/historicalLine',
+            dataType :"json",
+            success : function(data) {
+                if (data.code == "200") {
+                    var dsData = data.data;
+                    if (dsData != null){
+                        titleText = dsData[0].dsname;
+                        legendData.push(titleText);
+                        $.each(dsData,function (i,obj) {
+                            xAxisData.push(obj.valuetime);
+                            seriesData.push(obj.dsvalue);
+                        })
+                        console.log(xAxisData);
+
+
+
+                        // 基于准备好的dom，初始化echarts实例
+                        var historicalData = echarts.init(document.getElementById("historicalData"));
+                        // 指定图表的配置项和数据
+                        var data_options = {
+                            title: {
+                                text: titleText,
+                                show: true
+                            },
+                            top: '10%',
+                            tooltip: {
+                                show: true,
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data: legendData
+                            },
+
+                            toolbox: {
+                                show: true,
+                                showTitle: true,
+                                feature: {
+                                    dataZoom: {
+                                        yAxisIndex: 'none'
+                                    },
+                                    dataView: {readOnly: false},
+                                    magicType: {type: ['line', 'bar']},
+                                    restore: {},
+                                    saveAsImage: {}
+                                }
+                            },
+
+
+                            dataZoom: [{
+                                startValue: legendData[0]
+                            }, {
+                                type: 'inside'
+                            }],
+                            xAxis:  {
+                                show:true,
+                                type: 'category',
+                                boundaryGap: false,
+                                data:xAxisData
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                            series: [
+                                {
+                                    name:titleText,
+                                    type:'line',
+                                    data:seriesData,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
+                                        ]
+                                    }
+                                }
+                            ]
+                        };
+
+
+                        historicalData.setOption(data_options);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    } else {
+                        alert("暂无数据");
+                    }
+
+                } else {
+                    alert(data.message);
+                }
+            }
+            
+        })
+
+    }
+
+</script>
 
 
 
 <script type="text/javascript">
 
 
-    // 基于准备好的dom，初始化echarts实例
-    var historicalData = echarts.init(document.getElementById('historicalData'));
-    // 指定图表的配置项和数据
-    var data_options = {
-        title: {
-            text: '历史数据',
-            show: true
-        },
-        top: '10%',
-        tooltip: {
-            show: true,
-            trigger: 'axis'
-        },
-        legend: {
-            data: ['湿度', '温度度']
-        },
-
-        toolbox: {
-            show: true,
-            showTitle: true,
-            feature: {
-                dataZoom: {
-                    yAxisIndex: 'none'
-                },
-                dataView: {readOnly: false},
-                magicType: {type: ['line', 'bar']},
-                restore: {},
-                saveAsImage: {}
-            }
-        },
 
 
-        dataZoom: [{
-            startValue: '2017-2-1'
-        }, {
-            type: 'inside'
-        }],
-        xAxis:  {
-            show:true,
-            type: 'category',
-            boundaryGap: false,
-            data: ['2017-1-1','2017-2-1','2017-3-1','2017-4-1','2017-5-1','2017-6-1','2017-7-1','2017-8-1','2017-9-1','2017-10-1']
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [
-            {
-                name:"湿度",
-                type:'line',
-                data:[0.5, 0.3, 0.6, 0, 3, 0.6, 0.4, 0.2, 0.1, 0],
-                markPoint: {
-                    data: [
-                        {type: 'max', name: '最大值'},
-                        {type: 'min', name: '最小值'}
-                    ]
-                }
-            },
-            {
-                name:"温度度",
-                type:'line',
-                data:[2, 3, 6, 0, 3, 16, 14,2, 10, 0],
-                markPoint: {
-                    data: [
-                        {type: 'max', name: '最大值'},
-                        {type: 'min', name: '最小值'}
-                    ]
-                }
-            }
 
 
-        ]
-    };
-
-
-    historicalData.setOption(data_options);
 
 </script>
 
