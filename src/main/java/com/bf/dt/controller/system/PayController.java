@@ -5,6 +5,10 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.bf.dt.config.AppPayConfig;
+import com.bf.dt.dao.system.UserMapper;
+import com.bf.dt.service.system.UserService;
+import com.bf.dt.util.TimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("pay")
 public class PayController {
+    @Autowired
+    UserMapper userMapper;
 
     @RequestMapping("pay")
     public void pay(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -28,7 +34,7 @@ public class PayController {
 
         //商户订单号，商户网站订单系统中唯一订单号，必填
 
-        String out_trade_no = new String( "202005181348".getBytes("ISO-8859-1"),"UTF-8");
+        String out_trade_no = new String( "202005181529".getBytes("ISO-8859-1"),"UTF-8");
         //付款金额，必填
 
         String total_amount = new String( "0.01".getBytes("ISO-8859-1"),"UTF-8");
@@ -66,5 +72,14 @@ public class PayController {
 
 
     }
+
+
+    @RequestMapping("test")
+    public void test(HttpServletRequest request){
+        String name = request.getParameter("name");
+        TimeUtil timeUtil = new TimeUtil();
+        timeUtil.renwu(userMapper,"6",name);
+    }
+
 
 }

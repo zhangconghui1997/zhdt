@@ -12,11 +12,15 @@ import java.util.Date;
 public class TaskUtil{
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-}
-   /* SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy--mm--dd");
-
-    //每隔三秒执行一次任务
+   /* //每隔三秒执行一次任务
     @Scheduled(fixedRate = 3000)
     public void cronJobs(){
+
+
         System.out.println("时间为："+simpleDateFormat.format(new Date()));
     }*/
+
+
+
+
+}
