@@ -1,0 +1,14 @@
+package com.bf.dt.config;
+
+public class AppPayConfig {
+
+    public static  String APPID = "2016102300745470";
+    public static  String SIYAO = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCtAUe6kjlaUG+zl07Nt0GLa16gUL009oenOJGXZnohrKXibeCQ2/nb2SvzRIr7o2u0DzEwrVSKAd0L/7w+Ez9gMBQT3juC0YAvG+o6MGNBEQsottwrCJDTkNkNH4mFUO7Vyp7qfcFtC2X4a+7+HMQv72dKO9AdgwKnFk7czRA28PZJmX8mIlxlRrKmmN6O6nElYPBOq0BNIz26m91aUxv8Y4AOLn0RN35RDY/vIDaZ06RoE2dfdmpLlSBmj3ahvZyEdc3eVOPVeem1mnAVv5GKoah1grgIOnkzOK4O5wG0hA2fNsOIRuWu2xamBzoSgVCRwEbZXi3QL+chg3ZwGqixAgMBAAECggEAUrvy/oEhFlSzJnJsiCpkGPVu2kHiSeq/srN1xK6IJ4R2DBO5uezIz19LClo0EOT1A7XkM0Ag1qLPgAZ7kkAIJcq4P0wer4/auiyiVdOAE8S/zmesYJQHFnYFpqX3UR8EKI9ucftTvf8ec6/CKhm9pKLbhX+XJhXZ9efQLP2QDIVhVHkTYoH+OkPyGD4aL2zzdjjIhkvDuNee1gNQu0k9k6dLX8ddBaHrO/wy2HOGBtkjbdk/Foh0O4ElIwpbXCB8Nq/tgTeCxkpINvaIlwUM29UtL1k1ACecisCLLSKPIR2OYtgyVKXhvoAXkZtyDcBbYn/uq509Wf+79tDfL17CsQKBgQD41q94TWF/RW+PgfcLhGpfBoUckrFq1GTYQxhiowphzayUkU92rbQJFGCts+dnKtXEcoX7pfVtxl7YRHn+jmdbbPxWpQHMG0WNzicfPyuMh77jB6t+4xBhBEEU4Tt08LsB2UKl/dv9pF29MIQS8nPsOJwv14pgNGfJWnJfHNbvFQKBgQCx++RNTyHY3dsrYAefD/a089WvyQruB0z/6hiXmh2ZqFLuut69nj5Swn/zphmYe6J+qNbWVG0KoqfGHChqgRHqjE2kRTvUZf1h/t7rV/c1CpR6jg+leiyYrs6kvTIrBLeP2Zn+em5AjonQRr2ye0NuiP72xVnDHERa65zZaICaLQKBgQCbqJAzTRSELMdQmhgT2E1CDC4QZaMeFKbQsYf7i8nezG38sblnn9lTJLAleLh0TNNUA9/UP0h71u9VkeBOYH4/Lrna6XVqXFTyE9ddMILpcbDzC8U3poqEZcjgatRqnnwc9+89LsQCsmMBCexUfd4OEouBUe95ps6VokKRRNUe0QKBgBEXI+v8fj6JxyLaHME8Ui87/rfbcS48CzvDqcrc5Jy9mgEMdpj0mf1uacTmnSyUKp1I7yAziSjtR3jxeTwI2sSP5mCwuTcC+Bqx04v7rWQteOZvv7bfDWs31eXhuPCCinHIrk3OScnvJfKW6F48EdSKWRkvCBiBHVsxpqUFsNudAoGBAKd4TU1VSL4A4sjBETxcNoGtBfiwmohdhjSfUTe58Z7Fqz1ajI8/J3J/cz39A4vmsy8hEHGeEwprlsvVbdJNPCjzepMC91henoD8N90iEr9d+6xBXLwQlz8uFnwoDdvZMQctuFmMsqDKXk2qXgU6D0P3bWaEO1QM4/TW7g0+OXEm";
+    // 支付宝公钥,查看地址：https://openhome.alipay.com/platform/keyManage.htm 对应APPID下的支付宝公钥。
+    public static  String GONGYAO = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAko465AolN4ebcbl/9JtLpK4CqZ7VMkKPhj9iITEvhEk9jk9C2IJKovlnn40+C9EuuREVvgO1qk7fYc/fz6onHrzBSvNgie+U2qZeQQEs0BLyDr91z5AtTns1N7FBlWdkKXSKtRzGm4wuI3zXphqqlvQ2/4kEHk++Q1++PhBKDR9YY+QZspUSQgvF2GG0NAQLXC/uMhsgdO2P+nQeTkyqHDu1VuRWrYop7nHc0TNwnQc0dCWPh0hMZBGIkyyUm4Mey6CEUCpIiiIO7VwjzO4TTIRhaezFDKkx6wpGkM96mYA23VdGIitzdDAZe69x06mh5E9MfCBwrex9c/08gx+4WwIDAQAB";
+    public static  String WANGGUAN = "https://openapi.alipaydev.com/gateway.do";
+    public static  String SURL = "https://www.baidu.com/";
+    public static  String CURL = "https://www.taobao.com/";
+    public static  String QIANMIGN = "RSA2";
+    public static  String BIANMA = "utf-8";
+}
