@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../layui/layui.js"></script>
+</head>
+
+<form id="drug-form" class="layui-form" action="">
+
+
+    <input type="file" name="file" id="test1" class="layui-upload-file"/><br>
+    <img class="layui-upload-img" id="demo1" /><br>
+    <input type="text" name="dName" id="dName"/><br>
+    <input type="file" lay-type="file" name="dDesc" id="dDesc" class="layui-upload-file"><br>
+    <p id="dDesc2" value=""/><br>
+    <button type="button" class="layui-btn layui-btn-primary" onclick="tijiao()">提交</button>
+
+</form>
+</body>
+
+<script type="text/javascript">
+    var dImg;
+    var dDsc;
+
+    layui.use('upload', function(){
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1' //绑定元素
+            ,url: '/oneNetDrug/fileUpload' //上传接口
+            /*,choose: function(obj) {
+                obj.preview(function (index, file, result) {
+                    obj.upload(index, file);
+                });
+            }*/
+            ,done: function(res, index, upload){
+                if (res.code == "200"){
+                    dImg = res.data;
+
+                } else {
+                    alert("上传失败");
+                }
+
+                layer.closeAll('loading'); //关闭loading
+            }
+ /*         //图片的预览
+            ,choose: function(obj){
+                obj.preview(function(index, file, result){
+                    $('#demo1').attr('src', result);
+                })
+            }*/
+        });
+
+        upload.render({
+            elem: '#dDesc' //绑定元素
+            ,accept: "file"
+            ,url: '/oneNetDrug/dDescUpload' //上传接口
+        /*    ,progress: function(n, elem){
+                var percent = n + '%' //获取进度百分比
+                element.progress('demo', percent); //可配合 layui 进度条元素使用
+
+                //以下系 layui 2.5.6 新增
+                console.log(elem); //得到当前触发的元素 DOM 对象。可通过该元素定义的属性值匹配到对应的进度条。
+            }*/
+            ,done: function(res, index, upload){
+                if (res.code == "200"){
+                    dDsc = res.data;
+
+                } else {
+                    alert("上传失败");
+                }
+
+            layer.closeAll('loading'); //关闭loading
+        }
+        });
+    });
+
+
+
+
+    function tijiao() {
+        var dName = $("#dName").val();
+        $.ajax({
+            type : 'POST',
+            url : '/oneNetDrug/addDrug',
+            data : {"file":dImg,"dDesc":dDsc,"dName":dName},
+            dataType :"json",
+            success : function(data) {
+                if (data.code == "200") {
+                    console.log(dImg,dName,dDsc);
+                alert("完成");
+                } else {
+                    alert(data.message);
+                }
+            }
+        })
+    }
+</script>
+</html>

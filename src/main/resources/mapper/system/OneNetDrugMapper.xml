@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.dt.dao.system.OneNetDrugMapper">
+
+    <resultMap id="BaseResultMap" type="com.bf.dt.entity.OneNetDrug">
+        <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+        <result column="drug_name" jdbcType="VARCHAR" property="drugName" />
+        <result column="drug_desc" jdbcType="VARCHAR" property="drugDesc" />
+        <result column="drug_num" jdbcType="INTEGER" property="drugNum" />
+        <result column="drug_img" jdbcType="VARCHAR" property="drugImg" />
+    </resultMap>
+
+    <insert id="addDrug" parameterType="com.bf.dt.entity.OneNetDrug">
+        insert into drug (uuid, drug_name, drug_desc,drug_img
+      )
+    values (#{uuid,jdbcType=VARCHAR}, #{drugName,jdbcType=VARCHAR}, #{drugDesc,jdbcType=VARCHAR}, #{drugImg,jdbcType=VARCHAR}
+      )
+    </insert>
+
+    <select id="drugList" resultMap="BaseResultMap">
+        select * from drug
+    </select>
+
+
+</mapper>

@@ -35,6 +35,9 @@ public class TimeUtil {
                     User user = userMapper.findByName(name);
                     String status = user.getStatus();
                     System.out.println(status);
+
+
+
                     if (a.equals(status)){
                         System.out.println(name + ":终止");
                         service.shutdown();
@@ -46,7 +49,7 @@ public class TimeUtil {
             }
         };
 
-        service.scheduleWithFixedDelay(runnable, 0, 20000, TimeUnit.MILLISECONDS);
+        service.scheduleWithFixedDelay(runnable, 0, 200000, TimeUnit.MILLISECONDS);
 
 
 

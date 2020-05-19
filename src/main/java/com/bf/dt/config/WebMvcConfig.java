@@ -24,5 +24,11 @@ public class WebMvcConfig implements WebMvcConfigurer{
                 .addPathPatterns("/**");
     }
 
+   /* @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("yaoliaoManage//**").addResourceLocations("file:F://drug//");
+    }*/
+
+
 
 }

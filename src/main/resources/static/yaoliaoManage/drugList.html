@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../layui/layui.js"></script>
+</head>
+
+<body>
+<table class="layui-hide" id="test"></table>
+<div id="drug-form">
+
+</div>
+
+</body>
+
+<script type="text/javascript">
+
+    $.ajax({
+        type : 'POST',
+        url : '/oneNetDrug/drugList',
+        dataType :"json",
+        success : function(data) {
+            if (data.code == "0") {
+            var drugs = data.data;
+                $.each(drugs,function(i,note){
+                    var dDesc = note.drugDesc;
+                    var dImg = "http://localhost:8086"+ note.drugImg;
+                    console.log(dImg);
+                    var html = '<tr><th><input type="hidden" id="uuid" value="' + note.uuid + '"></th>';
+                    html += '  <th><img src="' + dImg +'" id="dImg"></th>';
+                    html += '<th><p name="dName" id="dName">'+ note.drugName +'</p></th>';
+                    html += '<th><button type="button" class="layui-btn layui-btn-primary" onclick="dowload(' + dDesc + ')">查看详情</button></th>';
+                    $("#drug-form").append(html);
+                })
+
+
+            } else {
+                alert(data.message);
+            }
+        }
+    })
+
+</script>
+</html>
