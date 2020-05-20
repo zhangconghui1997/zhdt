@@ -40,7 +40,7 @@ public class OneNetDrugController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return MsgResult.success("200","/img/drug"+renameFile,"ok");
+        return MsgResult.success("200","/img/drug/"+renameFile,"ok");
 }
 
     @RequestMapping(value = "/dDescUpload")
