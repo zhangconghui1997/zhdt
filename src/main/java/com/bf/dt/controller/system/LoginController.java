@@ -35,7 +35,6 @@ public class LoginController {
     @RequestMapping("/login")
     public MsgResult login(String loginName, String password, HttpSession session){
         try {
-
             String s = EncryptionUtil.AESEnc(EncryptionUtil.key, password);
             Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(loginName, s);

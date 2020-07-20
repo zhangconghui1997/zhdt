@@ -25,7 +25,7 @@ public class OneNetAreaController {
 
     @RequestMapping("getYuanQu")
     public C001PO getYuanquDetailsById(){
-        String yuanQuId = "2a42ace6df21493ca9d01aefbd8719bb";//园区ID
+        String yuanQuId = "83cea031843e4635b5e07fbea6dfa2e6";//园区ID
         try {
             return oneNetAreaService.retrieveC001ByMA001(yuanQuId);
         } catch (Exception e) {
@@ -44,8 +44,8 @@ public class OneNetAreaController {
     public List getMapPoint(){
 
         List<DtSitePO> dtSitePOS = new ArrayList<>();
-        String userId = "60c2ffe976d1444daf0398e88bfe7902";
-        String orgId = "2a42ace6df21493ca9d01aefbd8719bb";
+        String userId = "b68813ba889349f899af0a50f1394e74";
+        String orgId = "83cea031843e4635b5e07fbea6dfa2e6";
         dtSitePOS = OneNetUtil.getSiteListByAuth(oneNetAreaService,userId,orgId);
         return dtSitePOS;
     }

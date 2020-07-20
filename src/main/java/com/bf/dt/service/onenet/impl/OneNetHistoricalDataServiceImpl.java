@@ -33,11 +33,11 @@ public class OneNetHistoricalDataServiceImpl implements OneNetHistoricalDataServ
                 String endTime = sdf.format(date);
                 calendar.add(Calendar.DAY_OF_MONTH, -1);
                 String starTime = sdf.format(calendar.getTime());
-                map.put("argAreaId","4e6c76b8f3c34f7a9e26d56a75a5d93d");
-                map.put("devId","593519998");
-                map.put("starTime",starTime);
-                map.put("endTime",endTime);
-                map.put(("dsId"),"airtemp");
+                map.put("argYuanQuId","83cea031843e4635b5e07fbea6dfa2e6");
+                map.put("devId","592021667");
+//                map.put("starTime",starTime);
+//                map.put("endTime",endTime);
+                map.put(("dsId"),"soilhumi2");
                 List<ArgCurvePO> argCurvePOS = oneNetHistoricalDataMapper.historicalLine(map);
 
 
