@@ -1,5 +1,6 @@
 package com.bf.dt.service.system.impl;
 
+import com.bf.dt.config.ProjectConfig;
 import com.bf.dt.dao.system.MenuMapper;
 import com.bf.dt.dao.system.RoleMenuMapper;
 import com.bf.dt.dao.system.UserMapper;
@@ -8,6 +9,7 @@ import com.bf.dt.entity.Menu;
 import com.bf.dt.entity.User;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.system.UserService;
+import com.bf.dt.util.JedisUtil;
 import com.bf.dt.util.PageUtil;
 import com.bf.dt.vo.UserMenu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService {
     RoleMenuMapper roleMenuMapper;
     @Autowired(required = false)
     MenuMapper menuMapper;
+    @Autowired
+    JedisUtil jedisUtil;
     @Override
     @Transactional
     public MsgResult findByName(String loginName, String password) {
