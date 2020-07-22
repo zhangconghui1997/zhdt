@@ -118,11 +118,10 @@
 
 </body>
 <script src="layui/layui.js"></script>
+<script src="utils/cookieUtil.js"></script>
 <!--<script src="js/jquery-2.1.1.min.js"></script>-->
 <script type="text/javascript">
 
-    var search = location.search;
-    var searchURL = search.substring(5, search.length);
 
     //JavaScript代码区域
     layui.use('element', function(){
@@ -132,8 +131,11 @@
          */
         $.ajax({
             type:"GET",
-            url:"user/menus?uid="+searchURL,
+            url:"user/menus",
             dataType:"json",
+            header:{
+                'usertoken':getCookie("usertoken")
+            },
             success:function(data){
                 //先添加所有的主材单
                 var data = data.data

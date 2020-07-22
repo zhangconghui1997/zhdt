@@ -1,25 +1,28 @@
 package com.bf.dt.service.system.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.bf.dt.config.ProjectConfig;
 import com.bf.dt.dao.system.MenuMapper;
 import com.bf.dt.dao.system.RoleMenuMapper;
 import com.bf.dt.dao.system.UserMapper;
 import com.bf.dt.dao.system.UserRoleMapper;
+import com.bf.dt.entity.LoginToken;
 import com.bf.dt.entity.Menu;
 import com.bf.dt.entity.User;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.system.UserService;
+import com.bf.dt.util.IdGenerator;
 import com.bf.dt.util.JedisUtil;
+import com.bf.dt.util.JwtUtil;
 import com.bf.dt.util.PageUtil;
 import com.bf.dt.vo.UserMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,19 +36,45 @@ public class UserServiceImpl implements UserService {
     MenuMapper menuMapper;
     @Autowired
     JedisUtil jedisUtil;
+    @Autowired(required = false)
+    IdGenerator idGenerator;
     @Override
     @Transactional
-    public MsgResult findByName(String loginName, String password) {
+    public MsgResult findByName(String loginName, String passwrod, HttpServletResponse response){
+
         User user = userMapper.findByName(loginName);
         if (user != null){
-            if (password.equals(user.getPassword())){
-                return MsgResult.success("200",user,"登录成功");
+            if (jedisUtil.exists(ProjectConfig.USERSD+user.getUuid())){
+            return MsgResult.error("500","账号锁定中，剩余时间："+jedisUtil.ttl(ProjectConfig.USERSD+user.getUuid()));
             }else {
-                return MsgResult.error("500","用户名或密码错误");
+                if (passwrod.equals(user.getPassword())){
+                    //生成令牌唯一id
+                    String id = idGenerator.nextId()+"";
+                    //有效载荷部分
+                    LoginToken loginToken = new LoginToken(id,loginName,user.getUuid());
+                    //生成jwt令牌
+                    String token = JwtUtil.createJWT(loginToken.getId(), JSON.toJSONString(loginToken));
+                    //存储redis
+                    jedisUtil.setex(user.getUuid()+":"+ProjectConfig.JWT,1800,token);
+                    response.addHeader(ProjectConfig.TOKENHEADER,token);
+                    return MsgResult.success("200",user,"登录成功");
+                }else {
+                    String key=ProjectConfig.PCOUNT+user.getUuid();
+                    jedisUtil.setex(key+"_"+System.currentTimeMillis(),600,"1");
+                    Set<String> set=jedisUtil.keys(key+"*");
+                    if(set.size()==3){
+                        //将当前账号冻结 1小时
+                        jedisUtil.setex(ProjectConfig.USERSD+user.getUuid(),3600,"10分钟连续失败三次冻结账号");
+                        jedisUtil.del(key+"*");
+                        return MsgResult.error("500","连续多次账号或密码错误，账号被锁定，请1小时之后再来登录");
+                    }
+                    return MsgResult.error("500","用户名或密码错误");
+                }
             }
         }else {
             return MsgResult.error("500","用户名或密码错误");
         }
+
     }
 
 
@@ -155,6 +184,25 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return MsgResult.error("200","查询失败");
+        }
+    }
+
+    @Override
+    public MsgResult checkLogin(String token) {
+        //1、校验Token有效性
+        if(JwtUtil.checkJWT(token)){
+            //反解析 令牌 获取当初登录的手机号
+            LoginToken loginToken=JSON.parseObject(JwtUtil.parseJWT(token),LoginToken.class);
+            //获取当前手机号的令牌
+            String t=jedisUtil.get(loginToken.getUid()+":"+ProjectConfig.JWT);
+            //比对令牌
+            if(Objects.equals(t,token)) {
+                return MsgResult.success("200", token,"有效");
+            }else {
+                return MsgResult.error("200","已经在其他地方登录了");
+            }
+        }else {
+            return MsgResult.error("500","Token校验失败");
         }
     }
 

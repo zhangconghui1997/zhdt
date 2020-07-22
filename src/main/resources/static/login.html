@@ -27,10 +27,12 @@
 
 
 
+<script src="utils/cookieUtil.js"></script>
 <script type="text/javascript">
     /**
      * 用户登录
      */
+
     function login() {
         $.ajax({
             type : 'POST',
@@ -38,10 +40,29 @@
             data : $("#login-form").serialize(),
           /*  contentType:"application/json",*/
             dataType :"json",
+            complete: function(xhr){
+                setCookie("usertoken",xhr.getResponseHeader("usertoken"));
+            },
             success : function(data) {
                 if (data.code == "200") {
+
+                  /*  $.ajax({
+                        type : 'POST',
+                        url : '/index.html',
+                        header:{
+                            'usertoken':getCookie("usertoken")
+                        },
+                        success : function() {}
+                    })
+
+*/
                     //登录成功后跳转到index页面
-                    window.location.href = "index.html?uid="+data.data.uuid;
+                    if (getCookie("usertoken")==null){
+                        window.location.href = "login.html";
+                    } else {
+                        window.location.href = "index.html";
+                    }
+
                 } else {
                     alert(data.message);
                 }

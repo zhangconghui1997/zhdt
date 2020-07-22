@@ -1,10 +1,14 @@
 package com.bf.dt.controller.system;
 
+import com.alibaba.fastjson.JSONObject;
+import com.bf.dt.config.ProjectConfig;
+import com.bf.dt.entity.LoginToken;
 import com.bf.dt.entity.User;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.system.UserService;
 import com.bf.dt.util.EncryptionUtil;
 
+import com.bf.dt.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -12,14 +16,18 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("user")
 public class LoginController {
     @Autowired(required = false)
     UserService userService;
@@ -32,21 +40,31 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/login")
-    public MsgResult login(String loginName, String password, HttpSession session){
+    @RequestMapping("login")
+    public MsgResult login(String loginName, String password, HttpServletResponse response){
         try {
             String s = EncryptionUtil.AESEnc(EncryptionUtil.key, password);
-            Subject subject = SecurityUtils.getSubject();
+          /*  Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(loginName, s);
             subject.login(usernamePasswordToken);
-            MsgResult msgResult = userService.findByName(loginName,s);
-            session.setAttribute("user", msgResult.getData());
+*/
+            MsgResult msgResult = userService.findByName(loginName,s,response);
+//            session.setAttribute("user", msgResult.getData());
             return  msgResult;
         } catch (AuthenticationException e) {
             e.printStackTrace();
             MsgResult msgResult = MsgResult.error("500", "认证失败");
             return  msgResult;
         }
+    }
+
+    /**
+     *检验token有效性
+     */
+    //检查是否有效
+    @GetMapping("checklogin")
+    public MsgResult check(@RequestParam("token")String token){
+        return userService.checkLogin(token);
     }
 
 
@@ -57,14 +75,22 @@ public class LoginController {
      */
 
     @ResponseBody
-    @RequestMapping("/menus")
-    public MsgResult menus(String uid){
-        MsgResult msgResult = userService.findMenuByUser(uid);
-        if (msgResult.getCode() == "200"){
-            System.out.println(msgResult.getData());
+    @RequestMapping("menus")
+    public MsgResult menus(HttpServletRequest request,HttpServletResponse response) throws IOException {
+        String token = "";
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(ProjectConfig.TOKENHEADER)) {
+                token = cookie.getValue();
+                String s = JwtUtil.parseJWT(token);
+                LoginToken loginToken = JSONObject.parseObject(s, LoginToken.class);
+                MsgResult msgResult = userService.findMenuByUser(loginToken.getUid());
+                return msgResult;
+            }
         }
+        response.sendRedirect("/login.html");
+        return MsgResult.error("500","认证失败");
 
-        return msgResult;
     }
 
 
@@ -75,7 +101,7 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/list")
+    @RequestMapping("list")
     public MsgResult list(String page, String limit){
         MsgResult msgResult = userService.findAll(page,limit);
         if (msgResult.getCode() == "200"){
@@ -91,7 +117,7 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/deleteById")
+    @RequestMapping("deleteById")
     public MsgResult deleteById(String id){
         MsgResult msgResult = userService.deleteById(id);
 
@@ -105,7 +131,7 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/findNameById")
+    @RequestMapping("findNameById")
     public MsgResult findNameById(String uid, HttpServletRequest request){
         try {
             User user = (User)request.getSession().getAttribute("user");

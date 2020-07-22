@@ -18,12 +18,11 @@ import java.util.Date;
  */
 public class JwtUtil {
 
-    String JWTKEY = "zhdt";
     /**
      * 基于JWT,生成令牌
      * id 令牌序号
      * content 存储的内容 */
-    public static String createJWT(String id,String content,String jwtKey){
+    public static String createJWT(String id,String content){
         //获取指定签名加密算法的枚举对象
         SignatureAlgorithm algorithm=SignatureAlgorithm.HS256;
         JwtBuilder builder=Jwts.builder();
@@ -31,19 +30,19 @@ public class JwtUtil {
         builder.setSubject(content); //sub
         builder.setIssuedAt(new Date());//开始时间
         builder.setExpiration(TimeUtil.getMinutes(ProjectConfig.JWTTIMET));//失效时间
-        builder.signWith(algorithm,createKey(jwtKey));
+        builder.signWith(algorithm,createKey());
         return builder.compact();
     }
 
     //生成秘钥
-    private static SecretKey createKey(String jwtKey){
-        byte[] dataKey=jwtKey.getBytes();
+    private static SecretKey createKey(){
+        byte[] dataKey=ProjectConfig.JWTKEY.getBytes();
         SecretKey key=new SecretKeySpec(dataKey,0,dataKey.length,"AES");
         return key;
     }
     //校验令牌是否合法
-    public static boolean checkJWT(String token,String jwtKey){
-        SecretKey key=createKey(jwtKey);
+    public static boolean checkJWT(String token){
+        SecretKey key=createKey();
         try{
             Claims claims=Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
             return true;
@@ -52,8 +51,8 @@ public class JwtUtil {
         }
     }
     //解析Token
-    public static String parseJWT(String token,String jwtKey){
-        SecretKey key=createKey(jwtKey);
+    public static String parseJWT(String token){
+        SecretKey key=createKey();
         try{
             Claims claims=Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
             return claims.getSubject();
@@ -62,8 +61,8 @@ public class JwtUtil {
         }
     }
     //更新失效时间
-    public static String updateJWT(String token,String jwtKey){
-        SecretKey key=createKey(jwtKey);
+    public static String updateJWT(String token){
+        SecretKey key=createKey();
         try{
             SignatureAlgorithm algorithm=SignatureAlgorithm.HS256;
             Claims claims=Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();

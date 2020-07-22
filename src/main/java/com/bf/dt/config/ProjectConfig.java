@@ -15,8 +15,12 @@ public class ProjectConfig {
     //用户jwt令牌有效期
     public static final String JWT = "jwt";
 
+    public static final String USERSD="userfreeze:";// 所有冻结的用户
+
     //jwt
-    public static final int JWTTIMET = 10;
+    public static final String JWTKEY= "zhdt";
+    public static final int JWTTIMET = 30;
+    public static final String TOKENHEADER = "usertoken";
 
 
 }

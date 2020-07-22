@@ -2,6 +2,8 @@ package com.bf.dt.shiro;
 
 import com.bf.dt.dao.system.UserMapper;
 import com.bf.dt.entity.User;
+import com.bf.dt.result.MsgResult;
+import com.bf.dt.service.system.UserService;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -14,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class MyRealm extends AuthorizingRealm {
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
 
     //授权
@@ -27,11 +29,16 @@ public class MyRealm extends AuthorizingRealm {
     //认证
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        String userName = token.getPrincipal().toString();
-        User user = userMapper.findByName(userName);
-        String passwordInDB = user.getPassword();
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName, passwordInDB, getName());
-        return authenticationInfo;
+/*        String userName = token.getPrincipal().toString();
 
+
+
+        if (msgResult.getData()!= null){
+            User user = (User) msgResult.getData();
+            String passwordInDB = user.getPassword();
+            SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName, passwordInDB, getName());
+            return authenticationInfo;
+        }*/
+        return null;
     }
 }

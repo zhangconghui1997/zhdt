@@ -16,7 +16,7 @@ public class OneNetCameraController {
     @Autowired
     OneNetCameraService oneNetCameraService;
 
-    @RequestMapping(value = "/start")
+    @RequestMapping(value = "start")
     public ArgCameraPO start(HttpServletRequest request){
         String id = request.getParameter("id");
         ArgCameraPO argCameraPO = null;
@@ -48,7 +48,7 @@ public class OneNetCameraController {
 
 
 
-    @RequestMapping(value = "/control")
+    @RequestMapping(value = "control")
     public String control(HttpServletRequest request){
         String direction = request.getParameter("command");//命令
         String id = request.getParameter("liveId");

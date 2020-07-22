@@ -23,7 +23,7 @@ public class OneNetDrugController {
     @Autowired
     OneNetDrugService oneNetDrugService;
 
-    @RequestMapping(value = "/fileUpload")
+    @RequestMapping(value = "fileUpload")
     @ResponseBody
     public MsgResult fileUpload(MultipartFile file) {
         if (file.isEmpty()) {
@@ -115,7 +115,7 @@ public class OneNetDrugController {
 
 
 
-    @RequestMapping(value = "/addDrug")
+    @RequestMapping(value = "addDrug")
     @ResponseBody
     public MsgResult addDrug(String file, String dDesc, String dName) {
         MsgResult msgResult = new MsgResult();
@@ -135,7 +135,7 @@ public class OneNetDrugController {
     }
 
 
-    @RequestMapping(value = "/drugList")
+    @RequestMapping(value = "drugList")
     @ResponseBody
     public MsgResult drugList() {
         MsgResult msgResult = oneNetDrugService.drugList();
