@@ -11,11 +11,13 @@ import com.bf.dt.entity.Menu;
 import com.bf.dt.entity.User;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.system.UserService;
-import com.bf.dt.util.IdGenerator;
-import com.bf.dt.util.JedisUtil;
-import com.bf.dt.util.JwtUtil;
-import com.bf.dt.util.PageUtil;
+import com.bf.dt.util.*;
 import com.bf.dt.vo.UserMenu;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,20 +30,108 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     @Autowired
     UserMapper userMapper;
-    @Autowired(required = false)
+    @Autowired
     UserRoleMapper userRoleMapper;
-    @Autowired(required = false)
+    @Autowired
     RoleMenuMapper roleMenuMapper;
-    @Autowired(required = false)
+    @Autowired
     MenuMapper menuMapper;
     @Autowired
     JedisUtil jedisUtil;
-    @Autowired(required = false)
+    @Autowired
     IdGenerator idGenerator;
     @Override
-    @Transactional
-    public MsgResult findByName(String loginName, String passwrod, HttpServletResponse response){
+    public MsgResult findByName(String loginName, String password, HttpServletResponse response){
 
+        /*
+          public Result login(@RequestBody User requestUser) {
+        String username = requestUser.getUsername();
+        username = HtmlUtils.htmlEscape(username);
+
+        Subject subject = SecurityUtils.getSubject();
+//        subject.getSession().setTimeout(10000);
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, requestUser.getPassword());
+        usernamePasswordToken.setRememberMe(true);
+        try {
+            subject.login(usernamePasswordToken);
+            User user = userService.findByUsername(username);
+            if (!user.isEnabled()) {
+                return ResultFactory.buildFailResult("该用户已被禁用");
+            }
+            return ResultFactory.buildSuccessResult(username);
+        } catch (IncorrectCredentialsException e) {
+            return ResultFactory.buildFailResult("密码错误");
+        } catch (UnknownAccountException e) {
+            return ResultFactory.buildFailResult("账号不存在");
+        }
+    }
+
+
+    String userName = token.getPrincipal().toString();
+        User user = userService.findByUsername(userName);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new UnknownAccountException();
+        }
+        String passwordInDB = user.getPassword();
+        String salt = user.getSalt();
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName, passwordInDB, ByteSource.Util.bytes(salt), getName());
+        return authenticationInfo;
+
+
+        */
+
+        String s = EncryptionUtil.AESEnc(EncryptionUtil.key, password);
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(loginName, s);
+        User user = userMapper.findByName(loginName);
+        String key=ProjectConfig.PCOUNT+user.getUuid();
+        if (user != null){
+            if (jedisUtil.exists(ProjectConfig.USERSD+user.getUuid())){
+                return MsgResult.error("500","账号锁定中，剩余时间："+jedisUtil.ttl(ProjectConfig.USERSD+user.getUuid()));
+            }else {
+                try {
+                    subject.login(usernamePasswordToken);
+                    //生成令牌唯一id
+                    String id = idGenerator.nextId()+"";
+                    //有效载荷部分
+                    LoginToken loginToken = new LoginToken(id,loginName,user.getUuid());
+                    //生成jwt令牌
+                    String token = JwtUtil.createJWT(loginToken.getId(), JSON.toJSONString(loginToken));
+                    //存储redis
+                    jedisUtil.setex(user.getUuid()+":"+ProjectConfig.JWT,1800,token);
+                    if (jedisUtil.exists(key)){
+                        jedisUtil.del(key);
+                    }
+                    response.addHeader(ProjectConfig.TOKENHEADER,token);
+                    return MsgResult.success("200",user,"登录成功");
+
+                }catch (IncorrectCredentialsException e){
+                    jedisUtil.setex(key+"_"+System.currentTimeMillis(),600,"1");
+                    Set<String> set=jedisUtil.keys(key+"*");
+                    if(set.size()==3){
+                        //将当前账号冻结 1小时
+                        jedisUtil.setex(ProjectConfig.USERSD+user.getUuid(),3600,"10分钟连续失败三次冻结账号");
+                        jedisUtil.del(key);
+                        return MsgResult.error("500","连续多次账号或密码错误，账号被锁定，请1小时之后再来登录");
+                    }
+                    return MsgResult.error("500","用户名或密码错误");
+                }
+            }
+        }else {
+            return MsgResult.error("500","用户名或密码错误");
+        }
+
+
+
+
+
+
+
+
+
+
+
+/*
         User user = userMapper.findByName(loginName);
         if (user != null){
             if (jedisUtil.exists(ProjectConfig.USERSD+user.getUuid())){
@@ -73,7 +163,7 @@ public class UserServiceImpl implements UserService {
             }
         }else {
             return MsgResult.error("500","用户名或密码错误");
-        }
+        }*/
 
     }
 
@@ -189,6 +279,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MsgResult checkLogin(String token) {
+
         //1、校验Token有效性
         if(JwtUtil.checkJWT(token)){
             //反解析 令牌 获取当初登录的手机号
@@ -199,7 +290,8 @@ public class UserServiceImpl implements UserService {
             if(Objects.equals(t,token)) {
                 return MsgResult.success("200", token,"有效");
             }else {
-                return MsgResult.error("200","已经在其他地方登录了");
+//                jedisUtil.set(ProjectConfig.EXPIREDMESSAGE,"已经在其他地方登录了");
+                return MsgResult.error("500","已经在其他地方登录了");
             }
         }else {
             return MsgResult.error("500","Token校验失败");

@@ -45,7 +45,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             }else {
                 httpServletResponse.sendRedirect("/login.html");
             }
-
+        httpServletResponse.sendRedirect("/login.html");
         return false;
 
     }

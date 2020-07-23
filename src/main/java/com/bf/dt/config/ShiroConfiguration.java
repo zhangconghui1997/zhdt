@@ -28,14 +28,14 @@ public class ShiroConfiguration {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(getWJRealm());
+        securityManager.setRealm(getWyRealm());
         return securityManager;
     }
 
 
 
     @Bean
-    public MyRealm getWJRealm() {
+    public MyRealm getWyRealm() {
         MyRealm myRealm = new MyRealm();
         return myRealm;
     }

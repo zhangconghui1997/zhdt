@@ -29,7 +29,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("user")
 public class LoginController {
-    @Autowired(required = false)
+    @Autowired
     UserService userService;
 
 
@@ -42,20 +42,7 @@ public class LoginController {
     @ResponseBody
     @RequestMapping("login")
     public MsgResult login(String loginName, String password, HttpServletResponse response){
-        try {
-            String s = EncryptionUtil.AESEnc(EncryptionUtil.key, password);
-          /*  Subject subject = SecurityUtils.getSubject();
-            UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(loginName, s);
-            subject.login(usernamePasswordToken);
-*/
-            MsgResult msgResult = userService.findByName(loginName,s,response);
-//            session.setAttribute("user", msgResult.getData());
-            return  msgResult;
-        } catch (AuthenticationException e) {
-            e.printStackTrace();
-            MsgResult msgResult = MsgResult.error("500", "认证失败");
-            return  msgResult;
-        }
+      return userService.findByName(loginName,password,response);
     }
 
     /**
@@ -147,19 +134,19 @@ public class LoginController {
 
 
 
-    public static void main(String[] args) {
-/*        String s = EncryptionUtil.AESEnc(EncryptionUtil.key, "123");
+/*    public static void main(String[] args) {
+*//*        String s = EncryptionUtil.AESEnc(EncryptionUtil.key, "123");
         String s1 = EncryptionUtil.AESEnc(EncryptionUtil.key, "1234");
         String s2 = EncryptionUtil.AESEnc(EncryptionUtil.key, "12345");
         System.out.println(s);
         System.out.println(s1);
-        System.out.println(s2);*/
+        System.out.println(s2);*//*
         String version1 = SpringBootVersion.getVersion();
         String version = SpringVersion.getVersion();
         System.out.println(version);
         System.out.println(version1);
 
-    }
+    }*/
 
 
 

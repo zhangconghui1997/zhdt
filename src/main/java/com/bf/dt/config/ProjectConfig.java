@@ -14,8 +14,9 @@ public class ProjectConfig {
     public static final String PCOUNT = "pcount";
     //用户jwt令牌有效期
     public static final String JWT = "jwt";
-
     public static final String USERSD="userfreeze:";// 所有冻结的用户
+    //唯一登录提示信息
+    public static final String EXPIREDMESSAGE = "expiredMessage";
 
     //jwt
     public static final String JWTKEY= "zhdt";

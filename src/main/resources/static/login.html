@@ -42,26 +42,18 @@
             dataType :"json",
             complete: function(xhr){
                 setCookie("usertoken",xhr.getResponseHeader("usertoken"));
+                console.log("usertoken"+xhr.getResponseHeader("usertoken"));
             },
             success : function(data) {
                 if (data.code == "200") {
-
-                  /*  $.ajax({
-                        type : 'POST',
-                        url : '/index.html',
-                        header:{
-                            'usertoken':getCookie("usertoken")
-                        },
-                        success : function() {}
-                    })
-
-*/
                     //登录成功后跳转到index页面
-                    if (getCookie("usertoken")==null){
+               /*     if (getCookie("usertoken")==null){
                         window.location.href = "login.html";
                     } else {
                         window.location.href = "index.html";
-                    }
+                    }*/
+
+                    window.location.href = "index.html";
 
                 } else {
                     alert(data.message);

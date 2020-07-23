@@ -1,22 +1,26 @@
 package com.bf.dt.shiro;
 
+import com.bf.dt.config.ProjectConfig;
 import com.bf.dt.dao.system.UserMapper;
 import com.bf.dt.entity.User;
 import com.bf.dt.result.MsgResult;
 import com.bf.dt.service.system.UserService;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import com.bf.dt.util.JedisUtil;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 public class MyRealm extends AuthorizingRealm {
     @Autowired
-    private UserService userService;
+    private UserMapper userMapper;
+
+
+
+
 
 
     //授权
@@ -29,16 +33,15 @@ public class MyRealm extends AuthorizingRealm {
     //认证
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-/*        String userName = token.getPrincipal().toString();
 
+        String loginName = token.getPrincipal().toString();
+        User user = userMapper.findByName(loginName);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new UnknownAccountException();
+        }
+        String password = user.getPassword();
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(loginName, password, getName());
+        return authenticationInfo;
 
-
-        if (msgResult.getData()!= null){
-            User user = (User) msgResult.getData();
-            String passwordInDB = user.getPassword();
-            SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName, passwordInDB, getName());
-            return authenticationInfo;
-        }*/
-        return null;
     }
 }
