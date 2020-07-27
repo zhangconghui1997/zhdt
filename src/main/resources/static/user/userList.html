@@ -13,7 +13,7 @@
 <div>
     <button id="daochu" class="layui-btn layui-btn-warm">导出表格</button>
 </div>
-<table class="layui-table" lay-data="{width: 1600, height:700, url:'/user/list', page:true, id:'idTest'}" lay-filter="demo">
+    <table class="layui-table" lay-data="{width: 1600, height:700, url:'/user/list', page:true, id:'idTest'}" lay-filter="demo">
     <thead>
     <tr>
         <th lay-data="{field:'uuid', width:120, fixed: true}">ID</th>
@@ -36,6 +36,7 @@
 
 <script src="../layui/layui.js" charset="utf-8"></script>
 <script src="../js/jquery-2.1.1.min.js" charset="utf-8"></script>
+<script src="utils/cookieUtil.js"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
@@ -44,10 +45,36 @@
 
     layui.use('table', function(){
 
+
+
         /**
          *处理table工具栏里的内容
          */
         var table = layui.table;
+
+
+
+
+
+/*        table.render({
+            done:function () {
+                var expiredMsg = getCookie("EXPIREDMESSAGE");
+                if (expiredMsg != null && expiredMsg != ""){
+                    alert(expiredMsg);
+                }
+            }
+        })*/
+
+
+
+
+
+
+
+
+
+
+
         table.on('tool(demo)', function(obj){
             var data = obj.data;
             if(obj.event === 'detail'){
@@ -66,6 +93,10 @@
             }
         });
 
+
+
+
+
         $('#daochu').on('click', function () {
                 $.ajax({
                     type : 'POST',
@@ -73,7 +104,6 @@
                     dataType :"json",
                     success : function(data) {
                         if (data.code == "0") {
-
                             var dataTemp = data.data;
                             var downDatas =[];
                             $.each(dataTemp,function(i,obj){

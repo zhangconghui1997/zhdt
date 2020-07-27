@@ -37,7 +37,15 @@ public class LoginInterceptor implements HandlerInterceptor {
                         if (msgResult.getCode() == "200") {
                             return true;
                         } else {
+                         /*   String uri = httpServletRequest.getRequestURI();
+                            if (uri.contains(".html")){
+                                return true;
+                            }*/
+                       /*     System.out.println(JSON.toJSONString(msgResult));
+                            Cookie cookie0 = new Cookie(ProjectConfig.EXPIREDMESSAGE,msgResult.getMessage());
+                            httpServletResponse.addCookie(cookie0);*/
                             httpServletResponse.sendRedirect("/login.html");
+                         /*   httpServletResponse.addHeader(ProjectConfig.EXPIREDMESSAGE,JSON.toJSONString(msgResult));*/
                             return false;
                         }
                     }

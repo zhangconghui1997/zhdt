@@ -136,6 +136,17 @@
           /*  header:{
                 'usertoken':getCookie("usertoken")
             },*/
+/*            complete: function (xhr, data) {
+                if (xhr.getResponseHeader('expiredMessage')!= null && xhr.getResponseHeader('expiredMessage')!= ""){
+                    var message = xhr.getResponseHeader('expiredMessage');
+                    var obj = JSON.parse(message);
+                    alert(obj);
+                    alert(obj.code);
+                    if (obj.code == "500"){
+                        window.location.href = "login.html";
+                    }
+                }
+            },*/
             success:function(data){
                 //先添加所有的主材单
                 var data = data.data
